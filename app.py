@@ -79,6 +79,31 @@ def add_expense(category_name):
         updated_category = collection.find_one({"name": category_name})
         updated_category["_id"] = 0
         return jsonify(updated_category)
+    
+@app.route('/remove-category', methods=['GET'])
+def remove_category():
+    collection = expense_db["basic_structure"]
+    data = request.args.get('name')
+    collection.delete_one({"name": data})
+    return "Deleted category"
+
+@app.route('/remove-expense/<category_name>', methods=['GET'])
+def remove_expense(category_name):
+    collection = expense_db["basic_structure"]
+    data = request.args.get('expense')
+    category_document = collection.find_one({"name": category_name})
+        
+    if category_document:
+        expenses = category_document.get("expenses", [])
+        
+        if data in expenses:
+            expenses.remove(data)
+            
+        collection.update_one({"name": category_name}, {"$set": {"expenses": expenses}})
+        
+        updated_category = collection.find_one({"name": category_name})
+        updated_category["_id"] = 0
+        return jsonify(updated_category)
 
 
 
