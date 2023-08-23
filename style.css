@@ -1,0 +1,87 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    background: #000;
+}
+
+.container{
+    margin: 10px;
+    display: flex;
+    width: 50%;
+    margin-left: 25%;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.container .field{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.category{
+    display: flex;
+    flex-direction: column;
+}
+
+.category .title:hover{
+    cursor: pointer;
+}
+
+.category .title{
+    padding: 10px;
+    background: #222;
+    color: #ccc;
+}
+
+.category .content{
+    display: flex;
+    flex-direction: column;
+    background: #111;
+    height: 0;
+    color: #ccc;
+    overflow: hidden;
+}
+
+.category.open .content{
+    height: auto;
+}
+
+.category .content .expense{
+    display: grid;
+    align-items: center;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    gap: 20px;
+    padding: 15px;
+    user-select: none;
+}
+
+.category .content .expense .remove{
+    text-align: center;
+    color: #fff;
+    background: #f33;
+    font-size: 15px;
+    padding: 5px 10px;
+}
+
+.category .content .expense .remove:hover{
+    background: #a33;
+    cursor: pointer;
+}
+
+.category .content .add-expense{
+    margin: 10px;
+    padding: 10px;
+    background: #007aff;
+    font-size: 15px;
+    text-align: center;
+    color: #fff;
+    font: inherit;
+}
+
+.category .content .add-expense:hover{
+    cursor: pointer;
+}
