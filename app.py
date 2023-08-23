@@ -40,13 +40,13 @@ def update_data():
     data = request.args.get('data')
     json_data = json.loads(data)
     collection.update_one({"date": json_data["date"]}, {"$set" : json_data})
-    return "Data Updated"
+    return "success"
 
 @app.route('/delete', methods=['GET'])
 def delete_data():
     data = request.args.get('data')
     collection.delete_one({"date": data})
-    return "Data Deleted"
+    return "success"
     
 @app.route('/insert-data', methods=['GET'])
 def insert_frontend():
@@ -62,8 +62,8 @@ def add_category():
         data_dict = {"name": data, "expenses":[]}
         json_data = json.dumps(data_dict)
         collection.insert_one(data_dict)
-        return Response(json_data, content_type='application/json')
-    return "Category already present"
+        return "success"
+    return "fail"
 
 @app.route('/add-expense/<category_name>', methods=['GET'])
 def add_expense(category_name):
@@ -81,14 +81,15 @@ def add_expense(category_name):
         
         updated_category = collection.find_one({"name": category_name})
         updated_category["_id"] = 0
-        return jsonify(updated_category)
-    
+        return "success"
+    return "fail"
+
 @app.route('/remove-category', methods=['GET'])
 def remove_category():
     collection = expense_db["basic_structure"]
     data = request.args.get('name')
     collection.delete_one({"name": data})
-    return "Deleted category"
+    return "success"
 
 @app.route('/remove-expense/<category_name>', methods=['GET'])
 def remove_expense(category_name):
@@ -106,8 +107,8 @@ def remove_expense(category_name):
         
         updated_category = collection.find_one({"name": category_name})
         updated_category["_id"] = 0
-        return jsonify(updated_category)
-
+        return "success"
+    return "fail"
 
 
 if __name__ == '__main__':
