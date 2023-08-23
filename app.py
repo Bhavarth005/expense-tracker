@@ -110,6 +110,27 @@ def remove_expense(category_name):
         return "success"
     return "fail"
 
+@app.route('/get-base', methods=['GET'])
+def get_base():
+    collection = expense_db["basic_structure"]
+    documents = collection.find({})
+    document_list = [doc for doc in documents]
+    # json_data = json.loads(list(documents), default=json_util.default)
+    base_data = {
+        "categories" : {}
+    }
+    # print(document_list)
+    for entry in document_list:
+        category_name = entry["name"]
+        expenses = entry["expenses"]
+    
+        simplified_expenses = [{"name": expense} for expense in expenses]
+    
+        base_data["categories"][category_name] = simplified_expenses
+    # print(base_data)
+    json_data = json.dumps(base_data)
+    return Response(json_data, content_type='application/json')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
