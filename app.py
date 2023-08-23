@@ -1,6 +1,7 @@
 import json
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+from pymongo import ASCENDING
 from flask import Flask, request, Response, render_template, jsonify
 from bson import json_util
 
@@ -13,30 +14,107 @@ client = MongoClient(uri, server_api=ServerApi('1'))
 expense_db = client["expense_tracker"]
 collection = expense_db["expense_income_details"]
 
+# def get_expense(json_data):
+
+# def get_income():
+# def calculate_profit():
+        
+
 app = Flask(__name__)
 
 @app.route('/manage', methods=['GET'])
 def manage():
     return render_template("manage.html")
 
+def getINR(amt, cur):
+    amt = int(amt)
+    match cur: 
+        case "USD":
+            return amt * 82.73
+        case "GBP": 
+            return amt * 104.53
+        case "EUR":
+            return amt * 89.43
+    return amt
+            
 
 @app.route('/insert', methods=['GET'])
 def insert_data():
     data = request.args.get('data')
     json_data = json.loads(data)
-    # json_data["expenses"] = 
+    total_expense = 0
+    for cat in json_data["categories"]:
+        expenses = cat["expenses"]
+        for expense in expenses:
+            expense["amt_inr"] = round(getINR(expense["amt"], expense["cur"]))
+            print(expense["name"], expense["amt_inr"])
+            total_expense += expense["amt_inr"]
+            
+    profit_ratio = 100 - round(((total_expense * 100)/ int(json_data["income"])), 2)
+    json_data["total_expense"] = total_expense
+    json_data["profit"] = profit_ratio
     collection.insert_one(json_data)
+    print(json_data)
     return "Data inserted"
+
+@app.route("/get-overall-data", methods=["GET"])
+def overall_data():
+    total_amt_inr = 0
+    total_income = 0
+    for document in collection.find():
+        total_income += float(document['income'])
+        for category in document['categories']:
+            for expense in category['expenses']:
+                total_amt_inr += expense['amt_inr']
+
+    profit_ratio = 100 - round(((total_amt_inr * 100)/ int(total_income)), 2)
+
+    data = {
+        "total-income": total_income,
+        "total-expense": total_amt_inr,
+        "profit-ratio": profit_ratio
+    }
+
+    return Response(json.dumps(data), content_type='application/json')
+
+
 
 @app.route('/view', methods=['GET'])
 def view_data():
-    
     data = request.args.get('data')
     results = collection.find({"date": data})
     json_data = json.dumps(list(results), default=json_util.default)
     return Response(json_data, content_type='application/json')
 
+@app.route("/get-sorted-expenses/<month>", methods=["GET"])
+def sorted_expenses(month):
+    all_expenses = []
+    for document in collection.find({"date": month}):
+        for category in document['categories']:
+            all_expenses.extend(category['expenses'])
+    sorted_expenses = sorted(all_expenses, key=lambda expense: expense['amt_inr'])
 
+    sorted_expenses.reverse()
+
+    for expense in sorted_expenses:
+        print(expense)
+
+    return sorted_expenses;
+
+@app.route("/get-sorted-expenses-by-loc/<month>", methods=["GET"])
+def sorted_expenses_loc(month):
+    all_expenses = []
+    for document in collection.find({"date": month}):
+        for category in document['categories']:
+            all_expenses.extend(category['expenses'])
+    sorted_expenses = sorted(all_expenses, key=lambda expense: expense['loc'])
+
+    sorted_expenses.reverse()
+
+    for expense in sorted_expenses:
+        print(expense)
+
+    return sorted_expenses;
 
 @app.route('/', methods=['GET'])
 def index():
