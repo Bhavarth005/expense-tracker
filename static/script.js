@@ -64,6 +64,23 @@ class Expense{
                 console.error("Expense not found in array.");
             }
         }
+
+        if(confirm("Do you also want to remove it from the basic structure?")){
+            console.log(this.category.name);
+            console.log(this.name);
+            let url = `/remove-expense/${this.category.name}?expense=${this.name}`;
+            console.log(url);
+
+            fetch(url).then(function (response) {
+                // Waiting for response
+                if (!response.ok)
+                    throw new Error('Error while getting customer data from API: Network response was not OK');
+                return response.text();
+            }).then(function (data) {
+                // Processing response
+                console.log(data);
+            });
+        }
     }
 
     getAsElement(){
@@ -153,6 +170,30 @@ class Category{
         }
     }
 
+    removeCategory = () => {
+        let category_index = categories.indexOf(this);
+        console.log(this);
+        console.log(category_index);
+        if(category_index >= 0){
+            categories.splice(category_index, 1);
+            this.DOM.remove();
+
+            if(confirm("Do you want to remove this category permanently?")){
+                fetch(`/remove-category?name=${this.name}`).then(function (response) {
+                    // Waiting for response
+                    if (!response.ok)
+                        throw new Error('Error while getting customer data from API: Network response was not OK');
+                    return response.text();
+                }).then(function (data) {
+                    // Processing response
+                    if(data == "success"){
+                        alert("Category removed permanently");
+                    }
+                });
+            }
+        }
+    }
+
     getBasicCategoryHtml(){
         let categoryDiv = createElementWithClassName("div", "category");
         
@@ -164,6 +205,11 @@ class Category{
         let h3 = document.createElement("h3");
         h3.innerText = this.name;
         titleDiv.appendChild(h3);
+
+        let deleteBtn = createElementWithClassName("a", "remove-cat-btn");
+        deleteBtn.innerText = "Remove category";
+        deleteBtn.onclick = this.removeCategory;
+        titleDiv.appendChild(deleteBtn);
         categoryDiv.appendChild(titleDiv);
 
         let addBtn = createElementWithClassName("a", "add-expense");
@@ -177,12 +223,31 @@ class Category{
         return categoryDiv;
     }
 
+    addExpenseToBase(expenseName){
+        let url = `/add-expense/${this.name}?expense=${expenseName}`;
+        console.log(url);
+
+        fetch(url).then(function (response) {
+            // Waiting for response
+            if (!response.ok)
+                throw new Error('Error while getting customer data from API: Network response was not OK');
+            return response.text();
+        }).then(function (data) {
+            // Processing response
+            console.log(data);
+        });
+    }
+
     newExpenseFromUser = () => {
         console.log(this);
         let expenseName = prompt("Enter expense name");
 
         if(expenseName && expenseName.length > 0)
             this.addExpense({name: expenseName});
+
+        if(confirm("Do you want to add this expense permanently?")){
+            this.addExpenseToBase(expenseName);
+        }
     }
 
     addExpense(obj){
@@ -215,38 +280,20 @@ class Category{
     }
 }
 
-let baseData = {
-    categories: {
-        Servers:[
-            {
-                name: "AWS",
-                amt: 100,
-                cur: 'USD',
-                loc: 'USA'
-            },
-            {
-                name: "Google Cloud Services",
-                amt: 300,
-                cur: 'EUR',
-                loc: 'UK'
-            }
-        ],
-        Services:[
-            {
-                name: "Cloudflare",
-                amt: 10,
-                cur: 'USD',
-                loc: 'USA'
-            },
-            {
-                name: "CPanel",
-                amt: 8,
-                cur: 'EUR',
-                loc: 'EUROPE'
-            }
-        ]
-    }
-}
+let baseData = {}
+
+fetch("/get-base").then(function (response) {
+    // Waiting for response
+    if (!response.ok)
+        throw new Error('Error while getting customer data from API: Network response was not OK');
+    return response.json();
+}).then(function (data) {
+    // Processing response
+    console.log(data);
+    baseData = data;
+    console.log("assigned");
+    populate_categories();
+});
 
 function formatDateToMON_YY() {
     const months = [
@@ -267,6 +314,22 @@ function new_category(){
     if(name && name.length > 0){
         let category = new Category(name);
         categories.push(category);
+        
+        if(confirm("Do you want to add this category permanently?")){
+            fetch(`/add-category?name=${name}`).then(function (response) {
+                // Waiting for response
+                if (!response.ok)
+                    throw new Error('Error while getting customer data from API: Network response was not OK');
+                return response.text();
+            }).then(function (data) {
+                // Processing response
+                if(data == "success"){
+                    alert("Category added permanently");
+                }
+            });
+        }else{
+            alert("Category added for this time only");
+        }
     }
 }
 
@@ -300,14 +363,16 @@ const container = document.querySelector(".container");
 // Populating static container attr.
 Category.parent = container;
 
+function populate_categories(){
 // ADDING BASE DATA CATEGORIES
-for(const category_name in baseData.categories){
-    const expenses = baseData.categories[category_name];
+    for(const category_name in baseData.categories){
+        const expenses = baseData.categories[category_name];
 
-    let category = new Category(category_name);
-    categories.push(category);
+        let category = new Category(category_name);
+        categories.push(category);
 
-    expenses.forEach(expense => {
-        category.addExpense(expense);
-    });
+        expenses.forEach(expense => {
+            category.addExpense(expense);
+        });
+    }
 }
