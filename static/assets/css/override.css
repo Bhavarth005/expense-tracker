@@ -1,0 +1,25 @@
+.sidebar .sidebar-brand-wrapper .sidebar-brand img {
+    width: 80%;
+}
+.sidebar .sidebar-brand-wrapper .sidebar-brand{
+    padding: 0 0 0 8px;
+}
+.sidebar .sidebar-brand-wrapper .sidebar-brand.brand-logo-mini img{
+    width: 80%;
+    height: auto;
+    padding: 0 0 0 8px;
+}
+
+.sidebar{
+    position: fixed;
+    top: 0;
+    height: 100vh;
+}
+
+.page-body-wrapper{
+    margin-left: 244px;
+}
+
+.sidebar-icon-only .page-body-wrapper{
+    margin-left: 70px;
+}
