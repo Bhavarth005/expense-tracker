@@ -40,13 +40,13 @@ def update_data():
     data = request.args.get('data')
     json_data = json.loads(data)
     collection.update_one({"date": json_data["date"]}, {"$set" : json_data})
-    return "Data Updated"
+    return "success"
 
 @app.route('/delete', methods=['GET'])
 def delete_data():
     data = request.args.get('data')
     collection.delete_one({"date": data})
-    return "Data Deleted"
+    return "success"
     
 @app.route('/insert-data', methods=['GET'])
 def insert_frontend():
@@ -57,10 +57,13 @@ def insert_frontend():
 def add_category():
     collection = expense_db["basic_structure"]
     data = request.args.get('name')
-    data_dict = {"name": data, "expenses":[]}
-    json_data = json.dumps(data_dict)
-    collection.insert_one(data_dict)
-    return Response(json_data, content_type='application/json')
+    find_result = collection.find({"name": data})
+    if len(list(find_result)) < 1:
+        data_dict = {"name": data, "expenses":[]}
+        json_data = json.dumps(data_dict)
+        collection.insert_one(data_dict)
+        return "success"
+    return "fail"
 
 @app.route('/add-expense/<category_name>', methods=['GET'])
 def add_expense(category_name):
@@ -78,14 +81,15 @@ def add_expense(category_name):
         
         updated_category = collection.find_one({"name": category_name})
         updated_category["_id"] = 0
-        return jsonify(updated_category)
-    
+        return "success"
+    return "fail"
+
 @app.route('/remove-category', methods=['GET'])
 def remove_category():
     collection = expense_db["basic_structure"]
     data = request.args.get('name')
     collection.delete_one({"name": data})
-    return "Deleted category"
+    return "success"
 
 @app.route('/remove-expense/<category_name>', methods=['GET'])
 def remove_expense(category_name):
@@ -103,8 +107,29 @@ def remove_expense(category_name):
         
         updated_category = collection.find_one({"name": category_name})
         updated_category["_id"] = 0
-        return jsonify(updated_category)
+        return "success"
+    return "fail"
 
+@app.route('/get-base', methods=['GET'])
+def get_base():
+    collection = expense_db["basic_structure"]
+    documents = collection.find({})
+    document_list = [doc for doc in documents]
+    # json_data = json.loads(list(documents), default=json_util.default)
+    base_data = {
+        "categories" : {}
+    }
+    # print(document_list)
+    for entry in document_list:
+        category_name = entry["name"]
+        expenses = entry["expenses"]
+    
+        simplified_expenses = [{"name": expense} for expense in expenses]
+    
+        base_data["categories"][category_name] = simplified_expenses
+    # print(base_data)
+    json_data = json.dumps(base_data)
+    return Response(json_data, content_type='application/json')
 
 
 if __name__ == '__main__':
