@@ -15,11 +15,16 @@ collection = expense_db["expense_income_details"]
 
 app = Flask(__name__)
 
+@app.route('/manage', methods=['GET'])
+def manage():
+    return render_template("manage.html")
+
+
 @app.route('/insert', methods=['GET'])
 def insert_data():
     data = request.args.get('data')
     json_data = json.loads(data)
-    
+    # json_data["expenses"] = 
     collection.insert_one(json_data)
     return "Data inserted"
 
@@ -30,6 +35,8 @@ def view_data():
     results = collection.find({"date": data})
     json_data = json.dumps(list(results), default=json_util.default)
     return Response(json_data, content_type='application/json')
+
+
 
 @app.route('/', methods=['GET'])
 def index():
@@ -119,7 +126,6 @@ def get_base():
     base_data = {
         "categories" : {}
     }
-    # print(document_list)
     for entry in document_list:
         category_name = entry["name"]
         expenses = entry["expenses"]
@@ -127,10 +133,8 @@ def get_base():
         simplified_expenses = [{"name": expense} for expense in expenses]
     
         base_data["categories"][category_name] = simplified_expenses
-    # print(base_data)
     json_data = json.dumps(base_data)
     return Response(json_data, content_type='application/json')
-
 
 if __name__ == '__main__':
     app.run(debug=True)
