@@ -57,10 +57,13 @@ def insert_frontend():
 def add_category():
     collection = expense_db["basic_structure"]
     data = request.args.get('name')
-    data_dict = {"name": data, "expenses":[]}
-    json_data = json.dumps(data_dict)
-    collection.insert_one(data_dict)
-    return Response(json_data, content_type='application/json')
+    find_result = collection.find({"name": data})
+    if len(list(find_result)) < 1:
+        data_dict = {"name": data, "expenses":[]}
+        json_data = json.dumps(data_dict)
+        collection.insert_one(data_dict)
+        return Response(json_data, content_type='application/json')
+    return "Category already present"
 
 @app.route('/add-expense/<category_name>', methods=['GET'])
 def add_expense(category_name):
