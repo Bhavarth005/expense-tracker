@@ -49,7 +49,6 @@ class Expense{
     }
 
     removeExpense = () => {
-        console.log(`Removing ${this.id}`);
         // FINDING FROM DOM
         const expenseElement = document.querySelector(`.expense[data-expense-id="${this.id}"]`);
 
@@ -249,6 +248,20 @@ let baseData = {
     }
 }
 
+function formatDateToMON_YY() {
+    const months = [
+      "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+      "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
+    ];
+
+    let date = new Date();
+  
+    const year = date.getFullYear() % 100;
+    const month = months[date.getMonth()];
+    
+    return `${month}_${year.toString().padStart(2, '0')}`;
+}
+
 function new_category(){
     let name = prompt("Enter category name");
     if(name && name.length > 0){
@@ -257,11 +270,37 @@ function new_category(){
     }
 }
 
+function submit_data(){
+    let dummy_data = {
+        date: formatDateToMON_YY(),
+        username: document.querySelector("#username-input").value,
+        income: document.querySelector("#income-input").value,
+        categories: categories
+    };
+    console.log(JSON.stringify(dummy_data));
+    let url = "/insert?data=" + JSON.stringify(dummy_data);
+    fetch(url).then(function (response) {
+        // Waiting for response
+        if (!response.ok)
+            throw new Error('Error while getting customer data from API: Network response was not OK');
+        return response.text();
+    }).then(function (data) {
+        // Processing response
+        console.log(data);
+    });
+}
+
+let dateField = document.querySelector("#date-field");
+
+dateField.innerText = formatDateToMON_YY();
+
 const categories = [];
 const container = document.querySelector(".container");
-Category.parent = container;
-// ADDING BASE DATA CATEGORIES
 
+// Populating static container attr.
+Category.parent = container;
+
+// ADDING BASE DATA CATEGORIES
 for(const category_name in baseData.categories){
     const expenses = baseData.categories[category_name];
 
