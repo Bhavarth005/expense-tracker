@@ -48,7 +48,17 @@ def delete_data():
     collection.delete_one({"date": data})
     return "Data Deleted"
     
-# @app.route('/add', methods=['GET'])
+@app.route('/insert-data', methods=['GET'])
+def insert_frontend():
+    return render_template("insert-data.html")
+
+
+@app.route('/add-category', methods=['GET'])
+def add_category():
+    results = collection.find({"categories": "Server"})
+    json_data = json.dumps(list(results), default=json_util.default)
+    return Response(json_data, content_type='application/json')
+
 
 
 if __name__ == '__main__':
