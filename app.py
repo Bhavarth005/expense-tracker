@@ -55,7 +55,9 @@ def insert_frontend():
 
 @app.route('/add-category', methods=['GET'])
 def add_category():
-    results = collection.find({"categories": "Server"})
+    collection = expense_db["basic_structure"]
+    category_name = "Server"  # Replace with the category name you want to search for
+    results = collection.find({"categories"})
     json_data = json.dumps(list(results), default=json_util.default)
     return Response(json_data, content_type='application/json')
 
