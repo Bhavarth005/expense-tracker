@@ -1,0 +1,5 @@
+name,amt,cur,loc,id,amt_inr
+AWS,123,USD,USA,0,10176
+Google Cloud,5500,INR,INDIA,1,5500
+Cpanel,510,GBP,UK,2,53310
+Cloudflare,5000,INR,INDIA,3,5000
