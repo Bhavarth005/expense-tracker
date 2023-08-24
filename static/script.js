@@ -176,7 +176,7 @@ class Category{
             this.DOM.querySelector(".title").click();
             return;
         }
-        // let category_index = categories.indexOf(this);
+        let category_index = categories.indexOf(this);
         if(category_index >= 0){
             categories.splice(category_index, 1);
             this.DOM.remove();

@@ -80,10 +80,11 @@
                 let expenses = data[country];
 
                 expenses.forEach(expense => {
-                    if(!(expense.name in added_expenses)){
+                    if(!added_expenses.includes(expense.name)){
                         let p = document.createElement("p");
                         p.innerHTML = `${expense.name}<br>`;
                         world_view.appendChild(p);
+                        added_expenses.push(expense.name);
                     }
                 });
             }
