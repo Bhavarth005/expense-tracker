@@ -223,53 +223,41 @@ body{
     cursor: pointer;
 }
 
-.edit,
-.logout{
-    padding: 10px;
-    font:inherit;
-    background: #333;
-    border-radius: 5px;
-    border: none;
-    outline: none;
-    line-height: 22px;
-    height: 22px;
-    text-decoration: none;
-    color: #fff;
-}
-
-.logout:hover{
-    cursor: pointer;
-}
-
 .top-data{
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-.insert{
-    background: #007aff;
+.btns{
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
 }
 
-
+.btns a{
+    padding: 10px;
+    display: flex;
+    text-decoration: none;
+    color: #fff;
+    align-items: center;
+    background: #333;
+    border-radius: 5px;
+}
 
 .btns a:nth-child(1){
     background: #007aff;
 }
 
-.delete-record{
-    padding: 10px;
-    font:inherit;
+.btns a:nth-child(2){
     background: #a00;
-    border-radius: 5px;
-    border: none;
-    outline: none;
-    line-height: 22px;
-    height: 22px;
-    text-decoration: none;
-    color: #fff;
 }
 
-.delete-record:hover{
-    cursor: pointer;
+.btns a:nth-child(3){
+    background: #0a0;
+}
+
+.btns a img{
+    height: 20px;
+    filter: invert(1);
 }

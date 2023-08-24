@@ -6,6 +6,12 @@
     <title>Document</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+    <style>
+        :root{
+            --collapse-url: url({{ url_for('static', filename='collapse.png') }});
+            --expand-url: url({{ url_for('static', filename='expand.png') }});
+        }
+    </style>
 </head>
 <body>
     <div class="top-data">
@@ -22,5 +28,9 @@
         <button class="add-cat" onclick="new_category()">Add Category</button>
         <button class="submit" onclick="submit_data()">Submit</button>
     </div>
+
+    <script>
+        let delete_img_path = "{{ url_for('static', filename='delete.png') }}";
+    </script>
 </body>
 </html>

@@ -1,3 +1,33 @@
+function formatDate(input) {
+    console.log(input);
+    const monthAbbreviations = {
+        JAN: 'January',
+        FEB: 'February',
+        MAR: 'March',
+        APR: 'April',
+        MAY: 'May',
+        JUN: 'June',
+        JUL: 'July',
+        AUG: 'August',
+        SEP: 'September',
+        OCT: 'October',
+        NOV: 'November',
+        DEC: 'December'
+    };
+
+    const parts = input.split('_');
+    const monthAbbreviation = parts[0];
+    const year = parts[1];
+
+    const fullMonth = monthAbbreviations[monthAbbreviation];
+
+    if (fullMonth) {
+        return `${fullMonth}, ${year}`;
+    } else {
+        return 'Invalid input';
+    }
+}
+
 function createElementWithClassName(tag, className){
     let element = document.createElement(tag);
     element.className = className;
@@ -200,6 +230,8 @@ class Category{
     getBasicCategoryHtml(){
         let categoryDiv = createElementWithClassName("div", "category");
         
+        let collapse_btn = document.createElement("div");
+        collapse_btn.className = "collapse-btn";
 
         let titleDiv = createElementWithClassName("div", "title");
         titleDiv.onclick = () => {
@@ -209,10 +241,21 @@ class Category{
         h3.innerText = this.name;
         titleDiv.appendChild(h3);
 
+        let delete_img = document.createElement("img");
+        delete_img.src = delete_img_path;
+
+
         let deleteBtn = createElementWithClassName("a", "remove-cat-btn");
-        deleteBtn.innerText = "Remove category";
+        deleteBtn.appendChild(delete_img);
         deleteBtn.onclick = this.removeCategory;
-        titleDiv.appendChild(deleteBtn);
+
+        
+        let right = document.createElement("div");
+        right.className = "right";
+        right.appendChild(deleteBtn);
+        right.appendChild(collapse_btn);
+
+        titleDiv.appendChild(right);
         categoryDiv.appendChild(titleDiv);
 
         let addBtn = createElementWithClassName("a", "add-expense");
@@ -248,7 +291,7 @@ class Category{
         if(expenseName && expenseName.length > 0)
             this.addExpense({name: expenseName});
 
-        if(confirm("Do you want to add this expense permanently?")){
+        if(confirm("Do you want to add this expense permanently? If you add permanently, this expense will be shown to you every time you add new data.")){
             this.addExpenseToBase(expenseName);
         }
     }
@@ -327,11 +370,11 @@ function new_category(){
             }).then(function (data) {
                 // Processing response
                 if(data == "success"){
-                    alert("Category added permanently");
+                    alert("Category added permanently. Every time you enter new data, this category will be added automatically");
                 }
             });
         }else{
-            alert("Category added for this time only");
+            alert("This category is added temporarily. The next time you enter data, this category will NOT be shown by default.");
         }
     }
 }
@@ -369,7 +412,7 @@ function submit_data(){
 
 let dateField = document.querySelector("#date-field");
 
-dateField.innerText = formatDateToMON_YY();
+dateField.innerText = formatDate(formatDateToMON_YY());
 
 const categories = [];
 const container = document.querySelector(".container");

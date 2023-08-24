@@ -17,8 +17,8 @@
             <h1 id="title"></h1>
             <div class="btns">
                 <a class="logout" href="{{url_for('index')}}">Dashboard</a>
-                <a class="delete-record" id="delete-btn-top">Delete Record</a>
-                <a class="edit" href="/edit/{{month_name}}">Edit Record</a>
+                <a class="delete-record" id="delete-btn-top"><img src={{ url_for('static', filename='delete.png') }} alt=""></a>
+                <a class="edit" href="/edit/{{month_name}}"><img src={{ url_for('static', filename='edit.png') }} alt=""></a>
                 <a class="logout" href="{{url_for('logout')}}">Logout</a>
             </div>
         </div>
@@ -102,6 +102,29 @@
         
 
         let list = document.querySelector(".records-list");
+
+        fetch("/get-sorted-expenses/{{month_name}}").then(res => {
+            return res.json();
+        }).then(data => {
+            // console.log(data);
+            data.forEach(expense => {
+                console.log(expense.amt);
+                const amt = Math.round(parseFloat(expense.amt_inr));
+                let a = document.createElement("a");
+                a.className = "month-record";
+                let p = document.createElement("p");
+                p.className = "link-left";
+                p.innerText = expense.name;
+                a.appendChild(p);
+
+                let p2 = document.createElement("p");
+                p2.className = "link-right";
+                p2.innerText = '₹ ' + amt;
+
+                a.appendChild(p2);
+                list.appendChild(a);
+            });
+        })
 
         fetch("/get-sorted-expenses/{{month_name}}").then(res => {
             return res.json();

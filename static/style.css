@@ -43,6 +43,33 @@ body{
     justify-content: space-between;
 }
 
+.category .title .right{
+    display: flex;
+    align-items: center;
+}
+
+.category .title .right .collapse-btn{
+    --btn-size: 20px;
+    height: var(--btn-size);
+    aspect-ratio: 1;
+    background: var(--expand-url);
+    background-size: 150%;
+    background-position: center;
+    margin-left: 20px;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    filter: invert(1);
+}
+
+.category.open .title .right .collapse-btn{
+    background: var(--collapse-url);
+    background-position: center;
+    background-size: 150%;
+}
+
 .category .title h3{
     margin-left: 10px;
 }
@@ -51,6 +78,13 @@ body{
     padding: 10px;
     background: #800;
     border-radius: 5px;
+    display: flex;
+    align-self: center;
+}
+
+.remove-cat-btn img{
+    height: 22px;
+    filter: invert(1);
 }
 
 .category .content{
