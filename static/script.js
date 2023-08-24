@@ -49,6 +49,7 @@ class Expense{
     }
 
     removeExpense = () => {
+        if(!confirm("Are you sure?")) return;
         // FINDING FROM DOM
         const expenseElement = document.querySelector(`.expense[data-expense-id="${this.id}"]`);
 
@@ -171,9 +172,11 @@ class Category{
     }
 
     removeCategory = () => {
-        let category_index = categories.indexOf(this);
-        console.log(this);
-        console.log(category_index);
+        if(!confirm("Are you sure?")){
+            this.DOM.querySelector(".title").click();
+            return;
+        }
+        // let category_index = categories.indexOf(this);
         if(category_index >= 0){
             categories.splice(category_index, 1);
             this.DOM.remove();

@@ -1,3 +1,5 @@
+from collections import defaultdict
+import heapq
 import json
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
@@ -101,20 +103,71 @@ def sorted_expenses(month):
 
     return sorted_expenses;
 
+@app.route("/get-months-list", methods=["GET"])
+def month_list():
+
+    data = {}
+    for document in collection.find():
+        data[document["date"]] = document["profit"]
+
+    print(data)
+
+    return Response(json.dumps(data, default=json_util.default), content_type='application/json')
+
+@app.route("/get-sorted-expenses-by-loc-all", methods=["GET"])
+def sorted_expenses_loc_all():
+    all_expenses = []
+    for document in collection.find():
+        for category in document['categories']:
+            all_expenses.extend(category['expenses'])
+    
+    sorted_expenses = sorted(all_expenses, key=lambda expense: expense['amt_inr'], reverse=True)
+
+    expenses_by_location = {}
+    for expense in sorted_expenses:
+        location = expense['loc']
+        if location not in expenses_by_location:
+            expenses_by_location[location] = []
+        expenses_by_location[location].append(expense)
+
+    return Response(json.dumps(expenses_by_location, default=json_util.default), content_type='application/json')
+
 @app.route("/get-sorted-expenses-by-loc/<month>", methods=["GET"])
 def sorted_expenses_loc(month):
     all_expenses = []
     for document in collection.find({"date": month}):
         for category in document['categories']:
             all_expenses.extend(category['expenses'])
-    sorted_expenses = sorted(all_expenses, key=lambda expense: expense['loc'])
+    
+    sorted_expenses = sorted(all_expenses, key=lambda expense: expense['amt_inr'], reverse=True)
 
-    sorted_expenses.reverse()
-
+    expenses_by_location = {}
     for expense in sorted_expenses:
-        print(expense)
+        location = expense['loc']
+        if location not in expenses_by_location:
+            expenses_by_location[location] = []
+        expenses_by_location[location].append(expense)
 
-    return sorted_expenses;
+    return Response(json.dumps(expenses_by_location, default=json_util.default), content_type='application/json')
+
+@app.route("/top-cats", methods=["GET"])
+def top_cats():
+    categories_expenses = defaultdict(float)
+    for document in collection.find():
+        for category in document['categories']:
+            for expense in category['expenses']:
+                categories_expenses[category['name']] += expense['amt_inr']
+
+    # Get the top 5 categories with highest expenses
+    top_categories = heapq.nlargest(5, categories_expenses, key=categories_expenses.get)
+
+    data = {}
+
+    # Print the top categories and their expenses
+    for category in top_categories:
+        data[category] = categories_expenses[category]
+        
+    return Response(json.dumps(data, default=json_util.default), content_type='application/json')
 
 @app.route('/', methods=['GET'])
 def index():
