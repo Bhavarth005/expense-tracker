@@ -292,19 +292,18 @@ def sorted_expenses_loc(month):
 @login_required
 def top_cats():
     categories_expenses = defaultdict(float)
+
     for document in collection.find():
         for category in document['categories']:
             for expense in category['expenses']:
                 categories_expenses[category['name']] += expense['amt_inr']
 
-    # Get the top 5 categories with highest expenses
-    top_categories = heapq.nlargest(5, categories_expenses, key=categories_expenses.get)
-
+    # Create a dictionary to store all categories and their expenses
     data = {}
 
-    # Print the top categories and their expenses
-    for category in top_categories:
-        data[category] = categories_expenses[category]
+    # Populate the data dictionary with categories and expenses
+    for category, expense in categories_expenses.items():
+        data[category] = expense
         
     return Response(json.dumps(data, default=json_util.default), content_type='application/json')
 
