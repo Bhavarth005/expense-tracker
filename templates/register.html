@@ -17,6 +17,12 @@
         <form action="{{url_for('create_account')}}" method="POST" class="form">
             <p class="field-label">Username</p>
             <input type="text" name="username" id="username" placeholder="Enter Username" required autocomplete="off">
+            <p class="field-label">Full name</p>
+            <input type="text" name="full-name" id="username" placeholder="Enter your full name" required autocomplete="off">
+            <p class="field-label">Mobile No.</p>
+            <input type="tel" name="mobile-no" id="username" placeholder="Enter mobile no" required autocomplete="off">
+            <p class="field-label">E-mail</p>
+            <input type="email" name="email" id="username" placeholder="Enter Email" required autocomplete="off">
             <p class="field-label label-pw">Password</p>
             <input type="password" name="password" id="password" placeholder="Enter Password" required>
             <p class="field-label label-pw">Confirm Password</p>
@@ -25,5 +31,10 @@
             <p id="Register_text">Already registered? <a href="{{url_for('login')}}">Login Here</a></p>
         </form>
     </div>
+    {% with msg=get_flashed_messages() %}
+        {% if msg[0]  %}
+            <script>alert("{{ msg[0] }}")</script>
+        {% endif %}
+    {% endwith %}
 </body>
 </html>

@@ -104,7 +104,7 @@ body{
 .category .content .expense{
     display: grid;
     align-items: center;
-    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr 1fr 50px;
     gap: 20px;
     padding: 15px;
     user-select: none;
@@ -115,8 +115,17 @@ body{
     color: #fff;
     background: #833;
     font-size: 15px;
-    padding: 10px 15px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 5px;
+}
+
+.category .content .expense .remove img{
+    height: 20px;
+    filter: invert(1);
 }
 
 .category .content .expense .remove:hover{

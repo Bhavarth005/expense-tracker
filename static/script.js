@@ -169,7 +169,12 @@ class Expense{
 
         // REMOVE BTN
         let removeBtn = createElementWithClassName("a", "remove");
-        removeBtn.innerText = "Remove";
+        
+        let delete_img = document.createElement("img");
+        delete_img.src = delete_img_path;
+
+        removeBtn.appendChild(delete_img);
+
         removeBtn.onclick = this.removeExpense;
         expenseDiv.appendChild(removeBtn);
 

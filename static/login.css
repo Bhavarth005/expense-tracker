@@ -4,6 +4,10 @@
     font-family: "Quicksand";
 }
 
+body{
+    background: #111;
+}
+
 .logo{
     height: 40px;
 }
@@ -47,9 +51,10 @@
     margin-top: 30px;
     width: 80%;
     padding: 20px;
-    background: #f8f8f8;
+    background: #222;
+    color: #ccc;
     border-radius: 15px;
-    outline: 1px solid #ccc;
+    outline: 1px solid #444;
 }
 
 .form *{
@@ -58,14 +63,14 @@
 
 .form input{
     border: 0;
-    outline: 1px solid #ccc;
+    outline: 1px solid #555;
     font-size: 15px;
     font-weight: 500;
     padding: 10px;
-    color: #666;
+    color: #ccc;
     width: calc(100% - 20px);
     border-radius: 5px;
-    background: #eee;
+    background: #484848;
 }
 
 .form input[type="button"],
@@ -89,7 +94,7 @@
 }
 
 .form .field-label{
-    margin-top: 5px;
+    margin-top: 10px;
     margin-bottom: 10px;
     font-size: 13px;
     font-weight: 600;

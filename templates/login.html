@@ -10,7 +10,6 @@
 <body>
     <div class="main-container">
         <div class="logo-container">
-            <!-- <img src="../img/logo.png" class="logo"> -->
             <h1>Expense Tracker</h1>
         </div>
         <h1 class="heading">Login to Expense Tracker</h1>
@@ -23,5 +22,11 @@
             <p id="Register_text">New User? <a href="{{url_for('create_account')}}">Register Here</a></p>
         </form>
     </div>
+
+    {% with msg=get_flashed_messages() %}
+        {% if msg[0]  %}
+            <script>alert("{{ msg[0] }}")</script>
+        {% endif %}
+    {% endwith %}
 </body>
 </html>

@@ -5,11 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='nav.css') }}">
+
+    <style>
+        :root{
+            --collapse-url: url({{ url_for('static', filename='collapse.png') }});
+            --expand-url: url({{ url_for('static', filename='expand.png') }});
+        }
+    </style>
 </head>
 <body>
+    {% include 'nav-bar.html' %}
     <div class="top-data">
         <h1>Edit Data of {{month_name}}</h1>
-        <a href="{{ url_for('index') }}">Dashboard</a>
     </div>
     <div class="container">
         Month: <p class="display-date" id="date-field"></p><br>
@@ -163,7 +171,12 @@
 
                 // REMOVE BTN
                 let removeBtn = createElementWithClassName("a", "remove");
-                removeBtn.innerText = "Remove";
+
+                let delete_img = document.createElement("img");
+                delete_img.src = "{{ url_for('static', filename='delete.png') }}";
+
+                removeBtn.appendChild(delete_img);
+
                 removeBtn.onclick = this.removeExpense;
                 expenseDiv.appendChild(removeBtn);
 
@@ -234,9 +247,24 @@
                 titleDiv.appendChild(h3);
 
                 let deleteBtn = createElementWithClassName("a", "remove-cat-btn");
-                deleteBtn.innerText = "Remove category";
+
+                let delete_img = document.createElement("img");
+                delete_img.src = "{{ url_for('static', filename='delete.png') }}";
+
+                deleteBtn.appendChild(delete_img)
+
                 deleteBtn.onclick = this.removeCategory;
-                titleDiv.appendChild(deleteBtn);
+
+                let right = document.createElement("div");
+                right.className = "right";
+                right.appendChild(deleteBtn);
+
+                let collapse_btn = document.createElement("div");
+                collapse_btn.className = "collapse-btn";
+
+                right.appendChild(collapse_btn);
+
+                titleDiv.appendChild(right);
                 categoryDiv.appendChild(titleDiv);
 
                 let addBtn = createElementWithClassName("a", "add-expense");

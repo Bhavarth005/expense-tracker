@@ -1,0 +1,44 @@
+<nav>
+    <div class="left">
+        <img src="{{ url_for('static', filename='hostingspell-white.png') }}" alt="HostingSpell Logo">
+    </div>
+    <div class="right">
+        <a href="{{ url_for('index') }}">Dashboard</a>
+        <a href="{{ url_for('insert_frontend') }}">Insert Data</a>
+        <div class="profile" onclick="open_menu()">
+            <div class="profile-pic"></div>
+            <p>{{ current_user.full_name }}</p>
+        </div>
+    </div>
+
+    <div class="user-menu">
+        <a href="{{ url_for('edit_profile') }}">Change Profile</a>
+        <a href="{{ url_for('delete_account') }}">Delete Account</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+
+    <script>
+        let overlay;
+        let profile = document.querySelector(".profile");
+
+        function open_menu(){
+            profile.setAttribute("onclick", "close_menu()");
+            document.querySelector("nav").classList.add("user-menu-open");
+            overlay = document.createElement("div");
+            overlay.style.height = "100vh";
+            overlay.style.width = "100vw";
+            overlay.style.background = "#0008";
+            overlay.style.position = "fixed";
+            overlay.style.top = "0";
+            overlay.style.left = "0";
+            overlay.onclick = () => {close_menu()}
+            document.body.appendChild(overlay);
+        }
+
+        function close_menu(){
+            profile.setAttribute("onclick", "open_menu()");
+            overlay.remove();
+            document.querySelector("nav").classList.remove("user-menu-open");
+        }
+    </script>
+</nav>

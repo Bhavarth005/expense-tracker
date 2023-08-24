@@ -1,0 +1,91 @@
+nav{
+    background: #222;
+    position: fixed;
+    display: flex;
+    top: 0;
+    padding: 0 20px;
+    justify-content: space-between;
+    box-sizing: border-box;
+    width: 100%;
+    z-index: 99;
+}
+
+nav .left{
+    display: flex;
+    align-items: center;
+}
+
+nav .left img{
+    height: 50%;
+}
+
+nav .right{
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+nav .right a{
+    text-decoration: none;
+    color: #ccc;
+    line-height: 100%;
+    padding: 20px 0;
+}
+
+nav .right .profile{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 20px;
+}
+
+nav.user-menu-open .profile{
+    background: #111;
+}
+
+nav .right .profile:hover{
+    cursor: pointer;
+}
+
+nav .right .profile-pic{
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+    background: url("profile.png");
+    background-size: cover;
+    filter: invert(1);
+}
+
+nav .right a:hover{
+    color: #fff;
+}
+
+nav .user-menu{
+    position: fixed;
+    flex-direction: column;
+    display: flex;
+    background: #444;
+    right: 20px;
+    overflow: hidden;
+    top: 70px;
+    display: none;
+    transition: 0.3s ease;
+}
+
+nav .user-menu a{
+    color: #ccc;
+    text-decoration: none;
+    padding: 15px 20px;
+}
+
+nav .user-menu a:hover{
+    background: #383838;
+}
+
+nav.user-menu-open .user-menu{
+    display: flex;
+}
+
+.top-data{
+    margin-top: 100px !important;
+}

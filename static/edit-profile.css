@@ -1,0 +1,32 @@
+form{
+    display: flex;
+    flex-direction: column;
+    margin-top:20px;
+}
+
+form input{
+    font: inherit;
+    font-size: 20px;
+    padding: 15px;
+    border-radius: 5px;
+    background: #222;
+    color: #ccc;
+    border: none;
+    outline: none;
+    margin-top: 5px;
+    margin-bottom: 15px;
+}
+
+input[type="submit"]{
+    font: inherit;
+    padding: 10px;
+    background: #007aff;
+    color: #fff;
+    border-radius: 5px;
+    outline: none;
+    border: none;
+}
+
+input[type="submit"]:hover{
+    filter: brightness(90%);
+}

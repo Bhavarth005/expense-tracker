@@ -7,18 +7,16 @@
     <title>Dashboard</title>
     <script src="{{ url_for('static', filename='donut.js') }}" defer></script>
     <link rel="stylesheet" href="{{url_for('static', filename = 'dashboard.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename = 'nav.css')}}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
 </head>
 <body>
+    {% include 'nav-bar.html' %}
     <div class="container">
         <div class="top-data">
             <h1 id="title"></h1>
-            <div class="btns">
-                <a class="logout insert" href="{{url_for('insert_frontend')}}">Insert Data</a>
-                <a class="logout" href="{{url_for('logout')}}">Logout</a>
-            </div>
         </div>
     <div class="top-cards-container">
         <div class="card profit">
@@ -37,10 +35,12 @@
         <div class="list-container">
             <div class="left">
                 <p>Profit Ratio</p>
-                <div class="graph">
-                    <h1 id="percent_display"></h1>
-                    <div class="donut"></div>
-                    <div class="donut-bg"></div>
+                <div class="graph-list-container">
+                    <div class="graph">
+                        <h1 id="percent_display"></h1>
+                        <div class="donut-bg" id="donut-bg"></div>
+                    </div>
+                    <div class="list"></div>
                 </div>
             </div>
             <div class="right">
@@ -83,6 +83,48 @@
             }
         }
         let overall_data = {}
+
+        let lastSlice = null;
+        let lastPercent;
+
+        function rand_int(start, end){
+            return Math.floor(Math.random() * (end - start + 1)) + start;
+        }
+
+        function get_legend(text, color){
+            let div = document.createElement("div");
+            div.style.height = "20px";
+            div.style.width = "20px";
+            div.style.background = color;
+
+            let p = document.createElement("p");
+            p.appendChild(div);
+            p.innerHTML += text;
+
+            return p;
+        }
+        
+        function add_slice(percent, color){
+            console.log(percent);
+            let graph = document.querySelector(".graph");
+            let donut_bg = document.querySelector(".donut-bg");
+            
+            let new_donut = document.createElement("div");
+            new_donut.className = "donut";
+            new_donut.style.clipPath = get_clip_path(percent);
+            new_donut.style.borderColor = color;
+            new_donut.style.position = "absolute";
+
+            if(lastSlice){
+                graph.insertBefore(new_donut, lastSlice);
+            }else{
+                graph.appendChild(new_donut);
+            }
+            lastSlice = new_donut;
+        }
+
+        let total_income;
+
         fetch("/get-overall-data").then(response => {
             return response.json()
         }).then(data => {
@@ -91,10 +133,8 @@
             document.querySelector(".expenses h1").innerText = "₹ " + data["total-expense"];
             document.querySelector(".income h1").innerText = "₹ " + data["total-income"];
 
-            update_percent(parseFloat(data["profit-ratio"]));
-            percent_display.innerText = data["profit-ratio"] + "%";
+            total_income = parseInt(data["total-income"]);
         });
-        
 
         let list = document.querySelector(".records-list");
 
@@ -163,6 +203,32 @@
             console.log("Loading data " + month);
         }
 
+        fetch("/top-cats-overall").then(res => {
+            return res.json()
+        }).then(data => {
+            let static_percent = 0;
+            
+            let list = document.querySelector(".graph-list-container .list");
+
+            for(const cat in data){
+                let amount = data[cat];
+                static_percent += (amount * 100)/total_income;
+                console.log(static_percent);
+
+                let random_color = `rgb(${rand_int(0, 255)}, ${rand_int(0, 255)}, ${rand_int(0, 255)})`;
+                add_slice(static_percent, random_color);
+                
+                list.appendChild(get_legend(cat + ` (${(amount * 100)/total_income}%)`, random_color));
+            }
+            list.appendChild(get_legend("Profit", "#444"));
+        })
+
     </script>
+
+    {% with msg=get_flashed_messages() %}
+    {% if msg[0]  %}
+        <script>alert("{{ msg[0] }}")</script>
+    {% endif %}
+    {% endwith %}
 </body>
 </html>

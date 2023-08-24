@@ -6,7 +6,7 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from pymongo import ASCENDING
 from bson import json_util
-from flask import Flask, render_template, request, redirect, url_for, Response
+from flask import Flask, render_template, request, redirect, url_for, Response, flash, get_flashed_messages
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from pymongo import MongoClient
@@ -34,6 +34,9 @@ class User(UserMixin):
         self.password = user_data['password']
         self.basic_collection_name = user_data["basic_collection_name"]
         self.financial_collection_name = user_data["financial_collection_name"]
+        self.full_name = user_data["full_name"]
+        self.email = user_data["email"]
+        self.mobile_no = user_data["mobile_no"]
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -54,33 +57,37 @@ def create_account():
         username = request.form.get('username')
         password = request.form.get('password')
         c_password = request.form.get('c_password')
+        full_name = request.form.get('full-name')
+        mobile_no = request.form.get('mobile-no')
+        email = request.form.get('email')
 
         #Check if both credenials match
         if password == c_password:
-            return render_template('register.html', err_msg="Credentials don't match", data1=username)
+            flash('Credentials do not match')
+            return render_template('register.html')
 
 
         # Check if the username already exists
         if db.users.find_one({'username': username}):
-            # flash('err_field_1')
-            return render_template('register.html', err_msg="This username is not available!", data1=username)
+            flash('This username is already taken')
+            return render_template('register.html')
 
         # Create a new user document
         user_data = {
             'username': username,
             'password': generate_password_hash(password),  # Hash the password
             'basic_collection_name': "basic_structure_" + username,
-            'financial_collection_name': "financial_records_" + username
+            'financial_collection_name': "financial_records_" + username,
+            'full_name': full_name,
+            'email': email,
+            'mobile_no': mobile_no,
         }
         db.users.insert_one(user_data)
 
         # Retrieve the newly created user's data
         user_data = db.users.find_one({'username': username})
         new_user = User(user_data)
-        # global collection
-        # collection = db["financial_records_"+ username.replace(" ", "_")]
-        # global basic_collection
-        # basic_collection = db["basic_structure_"+ username.replace(" ", "_")]
+        
         login_user(new_user)
         return redirect(url_for('index'))
     return render_template('register.html')
@@ -98,16 +105,58 @@ def login():
         user_data = db.users.find_one({'username': username})
 
         if not user_data:
-            # flash("err_field_1")
-            return render_template('login.html', err_msg='Username does not exist', data1=username)
+            flash("User does not exists")
+            return render_template('login.html')
 
         if check_password_hash(user_data['password'], password):
             user = User(user_data)
             login_user(user)
             return redirect(url_for('index'))
         else:
+            flash("Wrong password")
             return render_template('login.html', err_msg="Wrong password", data1=username)
     return render_template('login.html')
+
+
+
+@app.route("/edit-profile", methods=["GET", "POST"])
+@login_required
+def edit_profile():
+    if request.method == 'POST':
+        username = current_user.username
+        password = request.form.get('password')
+        full_name = request.form.get('full-name')
+        mobile_no = request.form.get('mobile-no')
+        email = request.form.get('email')
+
+        if check_password_hash(current_user.password, password):
+            update_query_result = db.users.update_one({"username": username}, {"$set": {
+                "full_name": full_name,
+                "email": email,
+                "mobile_no": mobile_no
+            }})
+
+            print(update_query_result.modified_count)
+
+            if update_query_result.modified_count > 0:
+                flash("Details Updated")
+                return redirect(url_for('index'))
+            else:
+                flash("Could not update details, update query failed")
+                return redirect(url_for('index'))
+        else:
+            flash("Wrong password")
+            return render_template("edit-profile.html", 
+                           usrname=username, 
+                           full_name=full_name, 
+                           email=email, 
+                           mobile_no=mobile_no)        
+
+    return render_template("edit-profile.html", 
+                           usrname=current_user.username, 
+                           full_name=current_user.full_name, 
+                           email=current_user.email, 
+                           mobile_no=current_user.mobile_no)
 
 @app.route('/logout')
 @login_required
@@ -185,6 +234,17 @@ def overall_data():
             "profit-ratio": 0
         }), content_type='application/json')
 
+@app.route("/delete-account", methods=["GET", "POST"])
+@login_required
+def delete_account():
+    if request.method == "POST":
+        collection.drop();
+        basic_collection.drop()
+        db.users.delete_one({"username": current_user.username})
+        logout_user()
+        flash("Your account has been deleted")
+        return render_template("login.html")
+    return render_template("delete-account.html")
 
 @app.route('/view', methods=['GET'])
 @login_required
@@ -288,12 +348,12 @@ def sorted_expenses_loc(month):
 
     return Response(json.dumps(expenses_by_location, default=json_util.default), content_type='application/json')
 
-@app.route("/top-cats", methods=["GET"])
+@app.route("/top-cats-overall", methods=["GET"])
 @login_required
 def top_cats():
     categories_expenses = defaultdict(float)
 
-# Iterate through documents in the collection
+    # Iterate through documents in the collection
     for document in collection.find():
         for category in document['categories']:
             for expense in category['expenses']:
@@ -307,6 +367,27 @@ def top_cats():
         data[category] = expense
         
     return Response(json.dumps(data, default=json_util.default), content_type='application/json')
+
+@app.route("/top-cats/<month>", methods=["GET"])
+@login_required
+def top_cats_month(month):
+    categories_expenses = defaultdict(float)
+
+    # Iterate through documents in the collection
+    for document in collection.find({"date": month}):
+        for category in document['categories']:
+            for expense in category['expenses']:
+                categories_expenses[category['name']] += expense['amt_inr']
+
+    # Create a dictionary to store all categories and their expenses
+    data = {}
+
+    # Populate the data dictionary with categories and expenses
+    for category, expense in categories_expenses.items():
+        data[category] = expense
+        
+    return Response(json.dumps(data, default=json_util.default), content_type='application/json')
+
 
 @app.route('/index', methods=['GET'])
 @login_required

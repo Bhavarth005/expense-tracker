@@ -7,19 +7,19 @@
     <title>Dashboard</title>
     <script src="{{ url_for('static', filename='donut.js') }}" defer></script>
     <link rel="stylesheet" href="{{url_for('static', filename = 'dashboard.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename = 'nav.css')}}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
 </head>
 <body>
+    {% include 'nav-bar.html' %}
     <div class="container">
         <div class="top-data">
             <h1 id="title"></h1>
             <div class="btns">
-                <a class="logout" href="{{url_for('index')}}">Dashboard</a>
                 <a class="delete-record" id="delete-btn-top"><img src={{ url_for('static', filename='delete.png') }} alt=""></a>
                 <a class="edit" href="/edit/{{month_name}}"><img src={{ url_for('static', filename='edit.png') }} alt=""></a>
-                <a class="logout" href="{{url_for('logout')}}">Logout</a>
             </div>
         </div>
     <div class="top-cards-container">
@@ -230,7 +230,7 @@
             lastSlice = new_donut;
         }
 
-        fetch("/top-cats").then(res => {
+        fetch("/top-cats/{{month_name}}").then(res => {
             return res.json()
         }).then(data => {
             let static_percent = 0;
@@ -245,7 +245,7 @@
                 let random_color = `rgb(${rand_int(0, 255)}, ${rand_int(0, 255)}, ${rand_int(0, 255)})`;
                 add_slice(static_percent, random_color);
                 
-                list.appendChild(get_legend(cat, random_color));
+                list.appendChild(get_legend(cat + ` (${(amount * 100)/total_income}%)`, random_color));
             }
             list.appendChild(get_legend("Profit", "#444"));
         })

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='nav.css') }}">
     <script src="{{ url_for('static', filename='script.js') }}" defer></script>
     <style>
         :root{
@@ -14,9 +15,9 @@
     </style>
 </head>
 <body>
+    {% include 'nav-bar.html' %}
     <div class="top-data">
         <h1>Insert Data</h1>
-        <a href="{{ url_for('index') }}">Dashboard</a>
     </div>
     <div class="container">
         Month: <p class="display-date" id="date-field"></p><br>

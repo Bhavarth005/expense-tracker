@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='nav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='edit-profile.css') }}">
+    <title>Edit Profile</title>
+</head>
+<body>
+    {% include 'nav-bar.html' %}
+    <div class="container" style="margin-top: 100px">
+        <h1 class="title">Edit your profile</h1>
+        <form method="POST">
+            <p>Username</p>
+            <input type="text" name="username" value="{{usrname}}" disabled>
+            <p>Full name</p>
+            <input type="text" name="full-name" value="{{full_name}}">
+            <p>E-mail</p>
+            <input type="email" name="email" value="{{email}}">
+            <p>Mobile No.</p>
+            <input type="tel" name="mobile-no" value="{{mobile_no}}">
+            <p>Confirm your password</p>
+            <input type="password" name="password" required>
+            <input type="submit" value="Save Changes"/>
+        </form>
+    </div>
+
+    {% with msg=get_flashed_messages() %}
+        {% if msg[0]  %}
+            <script>alert("{{ msg[0] }}")</script>
+        {% endif %}
+    {% endwith %}
+</body>
+</html>
