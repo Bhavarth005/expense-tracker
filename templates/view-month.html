@@ -171,12 +171,18 @@
 
         document.querySelector("#delete-btn-top").onclick = () => {
             if(confirm("Are you sure you want to delete this?")){
-                fetch("{{url_for('delete_data')}}?data={{month_name}}").then(res => {
+                password = prompt("Enter your password");
+                if(password && password.length > 0){
+
+                }
+                fetch(`{{url_for('delete_data')}}?data={{month_name}}&password=${password}`).then(res => {
                     return res.text();
                 }).then(data => {
                     if(data == "success"){
                         alert("Data deleted");
                         window.location.href = "{{url_for('index')}}";
+                    }else if(data == "wrong_pw"){
+                        alert("Wrong password");
                     }else{
                         alert("Could not delete data");
                     }

@@ -103,13 +103,8 @@ def login():
         if check_password_hash(user_data['password'], password):
             user = User(user_data)
             login_user(user)
-            # global collection
-            # collection = db["financial_records_"+ username.replace(" ", "_")]
-            # global basic_collection
-            # basic_collection = db["basic_structure_"+ username.replace(" ", "_")]
             return redirect(url_for('index'))
         else:
-            # flash("err_field_2")
             return render_template('login.html', err_msg="Wrong password", data1=username)
     return render_template('login.html')
 
@@ -297,8 +292,12 @@ def index():
 @login_required
 def delete_data():
     data = request.args.get('data')
-    collection.delete_one({"date": data})
-    return "success"
+    pw = request.args.get("password")
+    if check_password_hash(current_user.password, pw):
+        collection.delete_one({"date": data})
+        return "success"
+    else:
+        return "wrong_pw"
     
 @app.route('/insert-data', methods=['GET'])
 @login_required
