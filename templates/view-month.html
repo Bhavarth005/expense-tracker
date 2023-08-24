@@ -16,7 +16,7 @@
         <div class="top-data">
             <h1 id="title"></h1>
             <div class="btns">
-                <a class="logout insert" href="{{url_for('insert_frontend')}}">Insert Data</a>
+                <a class="logout" href="{{url_for('index')}}">Dashboard</a>
                 <a class="logout" href="{{url_for('logout')}}">Logout</a>
             </div>
         </div>
@@ -83,41 +83,45 @@
             }
             }
         let overall_data = {}
-        fetch("/get-overall-data").then(response => {
+
+        fetch("/view?data={{month_name}}").then(response => {
             return response.json()
         }).then(data => {
-            title.innerText = "Overall data of {{ current_user.username }}";
-            document.querySelector(".profit h1").innerText = data["profit-ratio"] + "%";
-            document.querySelector(".expenses h1").innerText = "₹ " + data["total-expense"];
-            document.querySelector(".income h1").innerText = "₹ " + data["total-income"];
+            data = data[0];
+            console.log(data);
+            title.innerText = "{{ current_user.username }}'s data of {{month_name}}";
+            document.querySelector(".profit h1").innerText = data["profit"] + "%";
+            document.querySelector(".expenses h1").innerText = "₹ " + data["total_expense"];
+            document.querySelector(".income h1").innerText = "₹ " + data["income"];
 
-            update_percent(parseFloat(data["profit-ratio"]));
-            percent_display.innerText = data["profit-ratio"] + "%";
+            update_percent(parseFloat(data["profit"]));
+            percent_display.innerText = data["profit"] + "%";
         });
         
 
         let list = document.querySelector(".records-list");
 
-        fetch("/get-months-list").then(res => {
+        fetch("/get-sorted-expenses/{{month_name}}").then(res => {
             return res.json();
         }).then(data => {
-            for(const month in data){
-                const profit = Math.round(parseFloat(data[month]));
+            // console.log(data);
+            data.forEach(expense => {
+                console.log(expense.amt);
+                const amt = Math.round(parseFloat(expense.amt_inr));
                 let a = document.createElement("a");
-                a.href = "/view-month/" + month;
                 a.className = "month-record";
                 let p = document.createElement("p");
                 p.className = "link-left";
-                p.innerText = formatDate(month);
+                p.innerText = expense.name;
                 a.appendChild(p);
 
                 let p2 = document.createElement("p");
                 p2.className = "link-right";
-                p2.innerText = profit + " %";
+                p2.innerText = '₹ ' + amt;
 
                 a.appendChild(p2);
                 list.appendChild(a);
-            }
+            });
         })
 
         let world_view = document.querySelector(".world-view");

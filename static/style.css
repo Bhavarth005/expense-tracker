@@ -170,3 +170,20 @@ body > h1{
     font-size: 45px;
     margin-left: 25%;
 }
+
+.top-data{
+    padding: 20px 0;
+    width: 50%;
+    margin-left: 25%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.top-data a{
+    text-decoration: none;
+    color: #ccc;
+    padding: 10px;
+    background: #007aff;
+    border-radius: 5px;
+}

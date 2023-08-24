@@ -8,10 +8,13 @@
     <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head>
 <body>
-    <h1>Insert Data</h1>
+    <div class="top-data">
+        <h1>Insert Data</h1>
+        <a href="{{ url_for('index') }}">Dashboard</a>
+    </div>
     <div class="container">
         Month: <p class="display-date" id="date-field"></p><br>
-        Username: <input type="text" value="users-name" id="username-input" disabled readonly><br>
+        Username: <input type="text" value="{{current_user.username}}" id="username-input" disabled readonly><br>
         Income: <input type="number" id="income-input" required>
         <hr>
     </div>

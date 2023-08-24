@@ -150,6 +150,7 @@ def insert_data():
     json_data["total_expense"] = total_expense
     json_data["profit"] = profit_ratio
     collection.insert_one(json_data)
+        
     print(json_data)
     return "Data inserted"
 
@@ -188,6 +189,10 @@ def view_data():
     results = collection.find({"date": data})
     json_data = json.dumps(list(results), default=json_util.default)
     return Response(json_data, content_type='application/json')
+
+@app.route("/view-month/<month>", methods=["GET"])
+def view_month(month):
+    return render_template("view-month.html", month_name=month)
 
 @app.route("/get-sorted-expenses/<month>", methods=["GET"])
 def sorted_expenses(month):

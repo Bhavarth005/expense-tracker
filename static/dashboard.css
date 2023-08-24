@@ -230,9 +230,28 @@ body{
     border-radius: 5px;
     border: none;
     outline: none;
+    line-height: 22px;
+    height: 22px;
+    text-decoration: none;
     color: #fff;
 }
 
 .logout:hover{
     cursor: pointer;
+}
+
+.top-data{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.insert{
+    background: #007aff;
+}
+
+
+
+.btns a:nth-child(1){
+    background: #007aff;
 }
