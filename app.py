@@ -1,6 +1,7 @@
 from collections import defaultdict
 import heapq
 import json
+import csv
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from pymongo import ASCENDING
@@ -197,6 +198,30 @@ def view_data():
 @login_required
 def view_month(month):
     return render_template("view-month.html", month_name=month)
+
+@app.route("/generate-csv/<month>", methods=["GET"])
+@login_required
+def generate_csv(month):
+    results = collection.find({"date": month})
+    
+    csv_file = "output.csv"
+    with open(csv_file, mode='w', newline='') as file:
+        writer = csv.DictWriter(file, fieldnames=['name', 'amt', 'cur', 'loc', 'id', 'amt_inr'])
+        
+        # Write the header row
+        writer.writeheader()
+        
+        # Convert cursor to a list of dictionaries
+        for document in results:
+            for category in document['categories']:
+                for expense in category['expenses']:
+                    writer.writerow(expense)
+    return "printed"
+
+
+    # return(f"Data for {month} has been converted and saved to {csv_file}")
+    # Provide some user feedback or redirect here
+
 
 @app.route("/get-sorted-expenses/<month>", methods=["GET"])
 def sorted_expenses(month):
