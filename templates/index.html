@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{url_for('static', filename = 'dashboard.css')}}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <h1 id="title"></h1>
+    <div class="top-cards-container">
+        <div class="card profit">
+            <div class="left"><p>Profits</p><h1></h1></div>
+        </div>
+
+        <div class="card expenses">
+            <div class="left"><p>Total expenses</p><h1></h1></div>
+        </div>
+
+        <div class="card income">
+            <div class="left"><p>Total Income</p><h1></h1></div>
+        </div>
+    </div>
+
+    <div class="list-container">
+        <div class="left">Profit Ratio
+            <div class="graph">
+                <p>Graph Here</p>
+            </div>
+        </div>
+        <div class="right">
+            <div class="records-list"></div>
+        </div>
+    </div>
+
+    <div class="world-view">
+
+    </div>
+
+    <script>
+        let overall_data = {}
+        fetch("/get-overall-data").then(response => {
+            return response.json()
+        }).then(data => {
+            title.innerText = "Overall data";
+            document.querySelector(".profit h1").innerText = data["profit-ratio"] + "%";
+            document.querySelector(".expenses h1").innerText = "₹ " + data["total-expense"];
+            document.querySelector(".income h1").innerText = "₹ " + data["total-income"];
+        });
+
+        let list = document.querySelector(".records-list");
+
+        fetch("/get-months-list").then(res => {
+            return res.json();
+        }).then(data => {
+            for(const month in data){
+                const profit = data[month];
+                let a = document.createElement("a");
+                a.href = "/view?data=" + month;
+                a.innerHTML = `${month} - ${profit}%<br>`;
+                let hr = document.createElement("hr")
+                list.appendChild(a);
+                list.appendChild(hr);
+            }
+        })
+
+        let world_view = document.querySelector(".world-view");
+        fetch("/get-sorted-expenses-by-loc-all").then(res => {
+            return res.json();
+        }).then(data => {
+            let added_expenses = [];
+            for(const country in data){
+                let h1 = document.createElement("h1");
+                h1.innerText = country;
+                world_view.appendChild(h1);
+                let expenses = data[country];
+
+                expenses.forEach(expense => {
+                    if(!(expense.name in added_expenses)){
+                        let p = document.createElement("p");
+                        p.innerHTML = `${expense.name}<br>`;
+                        world_view.appendChild(p);
+                    }
+                });
+            }
+        })
+
+    </script>
+</body>
+</html>

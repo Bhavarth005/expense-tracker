@@ -1,0 +1,70 @@
+body{
+    background-color: rgb(0, 0, 0);
+    color: whitesmoke;
+    font-family: 'Ubuntu', sans-serif;;
+}
+.top-cards-container{
+    display: flex;
+    width: 90vw;
+    margin-left: 5vw;
+    gap: 20px;
+    justify-content: space-around;
+}
+#title{
+    text-align: center;
+}
+.card{
+    flex: 1;
+    /* border: 1px solid whitesmoke; */
+    color: rgb(218, 218, 223);
+    padding: 10px;
+    border-radius: 8px;
+    /* background-image: linear-gradient(320deg, rgba(156, 156, 156, 0.356), rgba(190, 190, 190, 0.356), whitesmoke ) ; */
+    background-color: #61677A;
+}
+
+.list-container{
+    display: flex;
+    width: 90vw;
+    margin-left: 5vw;
+    margin-top: 8vh;
+    height: 50vh;
+    justify-content: space-around;
+    gap: 20px;
+}
+.list-container .left
+{
+    flex: 1;
+    border: 1px solid whitesmoke;
+    border-radius: 5px;
+    padding: 10px;
+}
+.list-container .right
+{
+    border: 1px solid whitesmoke;
+    border-radius: 5px;
+    flex: 2;
+    padding: 10px;
+}
+.list-container .left .graph
+{
+    border: 1px solid white;
+    border-radius: 5px;
+    height: 80%;
+    margin-top: 5%;
+    text-align: center;
+}
+
+.records-list{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.records-list hr{
+    width: 100%;
+}
+.records-list a{
+    text-decoration: none;
+    color: whitesmoke;
+    margin: 5px;
+}
