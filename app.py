@@ -63,21 +63,28 @@ def insert_data():
 def overall_data():
     total_amt_inr = 0
     total_income = 0
-    for document in collection.find():
-        total_income += float(document['income'])
-        for category in document['categories']:
-            for expense in category['expenses']:
-                total_amt_inr += expense['amt_inr']
+    try:
+        for document in collection.find():
+            total_income += float(document['income'])
+            for category in document['categories']:
+                for expense in category['expenses']:
+                    total_amt_inr += expense['amt_inr']
 
-    profit_ratio = 100 - round(((total_amt_inr * 100)/ int(total_income)), 2)
+        profit_ratio = 100 - round(((total_amt_inr * 100)/ int(total_income)), 2)
 
-    data = {
-        "total-income": total_income,
-        "total-expense": total_amt_inr,
-        "profit-ratio": profit_ratio
-    }
+        data = {
+            "total-income": total_income,
+            "total-expense": total_amt_inr,
+            "profit-ratio": profit_ratio
+        }
 
-    return Response(json.dumps(data), content_type='application/json')
+        return Response(json.dumps(data), content_type='application/json')
+    except:
+        return Response(json.dumps({
+            "total-income": 0,
+            "total-expense": 0,
+            "profit-ratio": 0
+        }), content_type='application/json')
 
 
 
