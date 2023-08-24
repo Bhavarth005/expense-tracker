@@ -8,14 +8,16 @@
     <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head>
 <body>
-
+    <h1>Insert Data</h1>
     <div class="container">
         Month: <p class="display-date" id="date-field"></p><br>
         Username: <input type="text" value="users-name" id="username-input" disabled readonly><br>
         Income: <input type="number" id="income-input" required>
         <hr>
     </div>
-    <button class="add-cat" onclick="new_category()">Add Category</button>
-    <button class="submit" onclick="submit_data()">Submit</button>
+    <div class="btns">
+        <button class="add-cat" onclick="new_category()">Add Category</button>
+        <button class="submit" onclick="submit_data()">Submit</button>
+    </div>
 </body>
 </html>

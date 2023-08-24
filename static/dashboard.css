@@ -1,4 +1,4 @@
-body{
+/* body{
     background-color: rgb(0, 0, 0);
     color: whitesmoke;
     font-family: 'Ubuntu', sans-serif;;
@@ -15,11 +15,9 @@ body{
 }
 .card{
     flex: 1;
-    /* border: 1px solid whitesmoke; */
     color: rgb(218, 218, 223);
     padding: 10px;
     border-radius: 8px;
-    /* background-image: linear-gradient(320deg, rgba(156, 156, 156, 0.356), rgba(190, 190, 190, 0.356), whitesmoke ) ; */
     background-color: #61677A;
 }
 
@@ -67,4 +65,174 @@ body{
     text-decoration: none;
     color: whitesmoke;
     margin: 5px;
+} */
+
+*{
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    background: #111;
+    color: #fff;
+    font-family: "DM Sans";
+}
+
+.container{
+    width: 90%;
+    margin-left: 5%;
+}
+
+#title{
+    margin-top: 20px;
+    font-size: 50px;
+}
+
+.top-cards-container{
+    display: flex;
+    margin-top: 20px;
+    gap: 10px;
+}
+
+.card{
+    flex: 1;
+    background: #222;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.card .left p{
+    opacity: 0.7;
+}
+
+.card .left h1{
+    font-size: 35px;
+    margin-top: 10px;
+}
+
+.list-container{
+    display: grid;
+    margin-top: 10px;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.list-container .left,
+.list-container .right{
+    padding: 15px;
+    background: #222;
+    border-radius: 5px;
+    height: 100%;
+}
+
+.list-container .left p,
+.list-container .right p{
+    opacity: 0.7;
+    margin-bottom: 10px;
+}
+
+.link-left, .link-right{
+    margin: 0 !important;
+    padding: 0;
+}
+
+.month-record{
+    text-decoration: none;
+    color: #fff;
+    display: flex;
+    font-size: 20px;
+    padding: 15px;
+    align-items: center;
+    justify-content: space-between;
+    background: #0002;
+}
+
+.records-list{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.graph{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.donut{
+    height: 150px;
+    width: 150px;
+    border-radius: 50%;
+    z-index: 10;
+    border: 50px solid #007aff;
+}
+
+.donut-bg{
+    height: 150px;
+    position: absolute;
+    width: 150px;
+    border-radius: 50%;
+    border: 50px solid #444;
+}
+
+#percent_display{
+    position: absolute;
+}
+
+.world-view{
+    margin-top: 40px;
+    padding: 15px;
+    background: #222;
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.country-main{
+    display: flex;
+    flex-direction: column;
+}
+
+.country-main .title-main{
+    padding: 10px;
+    background: #333;
+}
+
+.country-main .title-main:hover{
+    cursor: pointer;
+}
+
+.country-main .title-main h1{
+    font-size: 15px;
+}
+
+.country-main .content-main{
+    background: #383838;
+    padding: 0px;
+    height: 0;
+    overflow: hidden;
+}
+
+.title-main.open ~ .content-main{
+    padding: 20px !important;
+    height: auto !important;
+}
+
+.month-record:hover{
+    cursor: pointer;
+}
+
+.logout{
+    padding: 10px;
+    font:inherit;
+    background: #333;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    color: #fff;
+}
+
+.logout:hover{
+    cursor: pointer;
 }

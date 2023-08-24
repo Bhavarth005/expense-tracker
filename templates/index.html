@@ -5,44 +5,78 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
+    <script src="{{ url_for('static', filename='donut.js') }}" defer></script>
     <link rel="stylesheet" href="{{url_for('static', filename = 'dashboard.css')}}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div class="container">
     <h1 id="title"></h1>
-    <a href="{{url_for('logout')}}">Logout</a>
+    <a class="logout" href="{{url_for('logout')}}">Logout</a>
     <div class="top-cards-container">
         <div class="card profit">
             <div class="left"><p>Profits</p><h1></h1></div>
         </div>
 
-        <div class="card expenses">
-            <div class="left"><p>Total expenses</p><h1></h1></div>
-        </div>
+            <div class="card expenses">
+                <div class="left"><p>Total expenses</p><h1></h1></div>
+            </div>
 
-        <div class="card income">
-            <div class="left"><p>Total Income</p><h1></h1></div>
-        </div>
-    </div>
-
-    <div class="list-container">
-        <div class="left">Profit Ratio
-            <div class="graph">
-                <p>Graph Here</p>
+            <div class="card income">
+                <div class="left"><p>Total Income</p><h1></h1></div>
             </div>
         </div>
-        <div class="right">
-            <div class="records-list"></div>
+
+        <div class="list-container">
+            <div class="left">
+                <p>Profit Ratio</p>
+                <div class="graph">
+                    <h1 id="percent_display"></h1>
+                    <div class="donut"></div>
+                    <div class="donut-bg"></div>
+                </div>
+            </div>
+            <div class="right">
+                <p>Available Records</p>
+                <div class="records-list"></div>
+            </div>
         </div>
-    </div>
 
-    <div class="world-view">
-
+        <div class="world-view"></div>
     </div>
 
     <script>
+        function formatDate(input) {
+            console.log(input);
+            const monthAbbreviations = {
+                JAN: 'January',
+                FEB: 'February',
+                MAR: 'March',
+                APR: 'April',
+                MAY: 'May',
+                JUN: 'June',
+                JUL: 'July',
+                AUG: 'August',
+                SEP: 'September',
+                OCT: 'October',
+                NOV: 'November',
+                DEC: 'December'
+            };
+
+            const parts = input.split('_');
+            const monthAbbreviation = parts[0];
+            const year = parts[1];
+
+            const fullMonth = monthAbbreviations[monthAbbreviation];
+
+            if (fullMonth) {
+                return `${fullMonth}, ${year}`;
+            } else {
+                return 'Invalid input';
+            }
+            }
         let overall_data = {}
         fetch("/get-overall-data").then(response => {
             return response.json()
@@ -51,7 +85,11 @@
             document.querySelector(".profit h1").innerText = data["profit-ratio"] + "%";
             document.querySelector(".expenses h1").innerText = "₹ " + data["total-expense"];
             document.querySelector(".income h1").innerText = "₹ " + data["total-income"];
+
+            update_percent(parseFloat(data["profit-ratio"]));
+            percent_display.innerText = data["profit-ratio"] + "%";
         });
+        
 
         let list = document.querySelector(".records-list");
 
@@ -59,13 +97,21 @@
             return res.json();
         }).then(data => {
             for(const month in data){
-                const profit = data[month];
+                const profit = Math.round(parseFloat(data[month]));
                 let a = document.createElement("a");
-                a.href = "/view?data=" + month;
-                a.innerHTML = `${month} - ${profit}%<br>`;
-                let hr = document.createElement("hr")
+                a.onclick = () => { load_data(month) };
+                a.className = "month-record";
+                let p = document.createElement("p");
+                p.className = "link-left";
+                p.innerText = formatDate(month);
+                a.appendChild(p);
+
+                let p2 = document.createElement("p");
+                p2.className = "link-right";
+                p2.innerText = profit + " %";
+
+                a.appendChild(p2);
                 list.appendChild(a);
-                list.appendChild(hr);
             }
         })
 
@@ -75,21 +121,42 @@
         }).then(data => {
             let added_expenses = [];
             for(const country in data){
-                let h1 = document.createElement("h1");
-                h1.innerText = country;
-                world_view.appendChild(h1);
-                let expenses = data[country];
+                let country_div = document.createElement("div");
+                country_div.className = "country-main";
 
+                let h1 = document.createElement("h1");
+                console.log(country);
+                h1.innerText = country;
+
+                let title_div = document.createElement("div");
+                title_div.className = "title-main";
+                title_div.onclick = () => {
+                    title_div.classList.toggle("open");
+                }
+                title_div.appendChild(h1);
+
+                let content_div = document.createElement("div");
+                content_div.className = "content-main";
+
+                let expenses = data[country];
                 expenses.forEach(expense => {
                     if(!added_expenses.includes(expense.name)){
                         let p = document.createElement("p");
                         p.innerHTML = `${expense.name}<br>`;
-                        world_view.appendChild(p);
+                        content_div.appendChild(p);
                         added_expenses.push(expense.name);
                     }
                 });
+
+                country_div.appendChild(title_div);
+                country_div.appendChild(content_div);
+                world_view.appendChild(country_div);
             }
         })
+
+        function load_data(month){
+            console.log("Loading data " + month);
+        }
 
     </script>
 </body>

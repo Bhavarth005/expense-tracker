@@ -1,7 +1,12 @@
 *{
     margin: 0;
     padding: 0;
-    /* color: #fff; */
+}
+
+body{
+    background: #111;
+    color: #fff;
+    font-family: "DM Sans";
 }
 
 .container{
@@ -32,15 +37,30 @@
     padding: 10px;
     background: #222;
     color: #ccc;
+    display: flex;
+    align-items: center;
+    border-radius: 15px;
+    justify-content: space-between;
+}
+
+.category .title h3{
+    margin-left: 10px;
+}
+
+.remove-cat-btn{
+    padding: 10px;
+    background: #800;
+    border-radius: 5px;
 }
 
 .category .content{
     display: flex;
     flex-direction: column;
-    background: #111;
+    background: #282828;
     height: 0;
     color: #ccc;
     overflow: hidden;
+    border-radius: 15px;
 }
 
 .category.open .content{
@@ -59,9 +79,10 @@
 .category .content .expense .remove{
     text-align: center;
     color: #fff;
-    background: #f33;
+    background: #833;
     font-size: 15px;
-    padding: 5px 10px;
+    padding: 10px 15px;
+    border-radius: 5px;
 }
 
 .category .content .expense .remove:hover{
@@ -73,6 +94,7 @@
     margin: 10px;
     padding: 10px;
     background: #007aff;
+    border-radius: 5px;
     font-size: 15px;
     text-align: center;
     color: #fff;
@@ -81,4 +103,70 @@
 
 .category .content .add-expense:hover{
     cursor: pointer;
+}
+
+.category .content input{
+    background: #444;
+    border: none;
+    outline: none;
+    font: inherit;
+    padding: 10px;
+    color: #fff;
+    border-radius: 3px;
+}
+
+.category .content select{
+    background: #444;
+    padding: 10px;
+    font: inherit;
+    color: #fff;
+    border-radius: 4px;
+}
+
+#username-input,
+#income-input{
+    padding: 10px;
+    font: inherit;
+    background: #222;
+    outline: none;
+    border: none;
+    border-radius: 5px;
+    color: #ccc;
+}
+
+.btns{
+    width: 50%;
+    margin-left: 25%;
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.btns button{
+    flex: 1;
+    padding: 10px;
+    font: inherit;
+    background: #333;
+    border: none;
+    outline: none;
+    border-radius: 10px;
+    color: #fff;
+}
+
+.btns button:hover{
+    cursor: pointer;
+}
+
+.btns button:nth-child(2){
+    background: #007aff;
+}
+
+#date-field{
+    font-size: 25px;
+}
+
+body > h1{
+    margin: 20px 0;
+    font-size: 45px;
+    margin-left: 25%;
 }

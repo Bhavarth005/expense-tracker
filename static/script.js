@@ -337,10 +337,15 @@ function new_category(){
 }
 
 function submit_data(){
+    let income_val = document.querySelector("#income-input").value;
+    if(income_val == ''){
+        alert("Income Required");
+        return;
+    }
     let dummy_data = {
         date: formatDateToMON_YY(),
         username: document.querySelector("#username-input").value,
-        income: document.querySelector("#income-input").value,
+        income: income_val,
         categories: categories
     };
     console.log(JSON.stringify(dummy_data));
@@ -353,6 +358,11 @@ function submit_data(){
     }).then(function (data) {
         // Processing response
         console.log(data);
+        if(data == "Data inserted"){
+            alert("Data Inserted!");
+        }else{
+            alert("Something happend and data could not be entered!");
+        }
     });
 }
 
