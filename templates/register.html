@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Form</title>
+    <link rel="stylesheet" href="../static/login.css">
+</head>
+<body>
+    <div class="main-container">
+        <div class="logo-container">
+            <!-- <img src="../img/logo.png" class="logo"> -->
+            <h1>Expense Tracker</h1>
+        </div>
+        <h1 class="heading" id="register_head_text">Register to Expense Tracker</h1>
+        <form action="{{url_for('create_account')}}" method="POST" class="form">
+            <p class="field-label">Username</p>
+            <input type="text" name="username" id="username" placeholder="Enter Username" required autocomplete="off">
+            <p class="field-label label-pw">Password</p>
+            <input type="password" name="password" id="password" placeholder="Enter Password" required>
+            <p class="field-label label-pw">Confirm Password</p>
+            <input type="password" name="password" id="c_password" placeholder="Re-type Password" required>
+            <input type="submit" value="Register">
+            <p id="Register_text">Already registered? <a href="{{url_for('login')}}">Login Here</a></p>
+        </form>
+    </div>
+</body>
+</html>
