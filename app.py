@@ -113,15 +113,11 @@ def login():
             return render_template('login.html', err_msg="Wrong password", data1=username)
     return render_template('login.html')
 
-@login_required
 @app.route('/logout')
+@login_required
 def logout():
     logout_user()
     return redirect(url_for('login'))
-
-@app.route('/manage', methods=['GET'])
-def manage():
-    return render_template("manage.html")
 
 def getINR(amt, cur):
     amt = int(amt)
@@ -136,6 +132,7 @@ def getINR(amt, cur):
             
 
 @app.route('/insert', methods=['GET'])
+@login_required
 def insert_data():
     data = request.args.get('data')
     json_data = json.loads(data)
@@ -150,12 +147,22 @@ def insert_data():
     profit_ratio = 100 - round(((total_expense * 100)/ int(json_data["income"])), 2)
     json_data["total_expense"] = total_expense
     json_data["profit"] = profit_ratio
-    collection.insert_one(json_data)
+
+    if len(list(collection.find({"date": json_data["date"]}))) > 0:
+        collection.replace_one({"date":json_data["date"]}, json_data)
+    else:
+        collection.insert_one(json_data)
         
     print(json_data)
     return "Data inserted"
 
+@app.route("/edit/<month>", methods=["GET"])
+@login_required
+def edit_data(month):
+    return render_template("edit-data.html", month_name=month)
+
 @app.route("/get-overall-data", methods=["GET"])
+@login_required
 def overall_data():
     total_amt_inr = 0
     total_income = 0
@@ -183,8 +190,8 @@ def overall_data():
         }), content_type='application/json')
 
 
-
 @app.route('/view', methods=['GET'])
+@login_required
 def view_data():
     data = request.args.get('data')
     results = collection.find({"date": data})
@@ -192,6 +199,7 @@ def view_data():
     return Response(json_data, content_type='application/json')
 
 @app.route("/view-month/<month>", methods=["GET"])
+@login_required
 def view_month(month):
     return render_template("view-month.html", month_name=month)
 
@@ -211,6 +219,7 @@ def sorted_expenses(month):
     return sorted_expenses;
 
 @app.route("/get-months-list", methods=["GET"])
+@login_required
 def month_list():
 
     data = {}
@@ -222,6 +231,7 @@ def month_list():
     return Response(json.dumps(data, default=json_util.default), content_type='application/json')
 
 @app.route("/get-sorted-expenses-by-loc-all", methods=["GET"])
+@login_required
 def sorted_expenses_loc_all():
     all_expenses = []
     for document in collection.find():
@@ -240,6 +250,7 @@ def sorted_expenses_loc_all():
     return Response(json.dumps(expenses_by_location, default=json_util.default), content_type='application/json')
 
 @app.route("/get-sorted-expenses-by-loc/<month>", methods=["GET"])
+@login_required
 def sorted_expenses_loc(month):
     all_expenses = []
     for document in collection.find({"date": month}):
@@ -258,6 +269,7 @@ def sorted_expenses_loc(month):
     return Response(json.dumps(expenses_by_location, default=json_util.default), content_type='application/json')
 
 @app.route("/top-cats", methods=["GET"])
+@login_required
 def top_cats():
     categories_expenses = defaultdict(float)
     for document in collection.find():
@@ -277,28 +289,25 @@ def top_cats():
     return Response(json.dumps(data, default=json_util.default), content_type='application/json')
 
 @app.route('/index', methods=['GET'])
+@login_required
 def index():
     return render_template("index.html")
 
-@app.route('/update', methods=['GET'])
-def update_data():
-    data = request.args.get('data')
-    json_data = json.loads(data)
-    collection.update_one({"date": json_data["date"]}, {"$set" : json_data})
-    return "success"
-
 @app.route('/delete', methods=['GET'])
+@login_required
 def delete_data():
     data = request.args.get('data')
     collection.delete_one({"date": data})
     return "success"
     
 @app.route('/insert-data', methods=['GET'])
+@login_required
 def insert_frontend():
     return render_template("insert-data.html")
 
 
 @app.route('/add-category', methods=['GET'])
+@login_required
 def add_category():
     data = request.args.get('name')
     find_result = collection.find({"name": data})
@@ -310,6 +319,7 @@ def add_category():
     return "fail"
 
 @app.route('/add-expense/<category_name>', methods=['GET'])
+@login_required
 def add_expense(category_name):
     data = request.args.get('expense')
     category_document = basic_collection.find_one({"name": category_name})
@@ -328,12 +338,14 @@ def add_expense(category_name):
     return "fail"
 
 @app.route('/remove-category', methods=['GET'])
+@login_required
 def remove_category():
     data = request.args.get('name')
     basic_collection.delete_one({"name": data})
     return "success"
 
 @app.route('/remove-expense/<category_name>', methods=['GET'])
+@login_required
 def remove_expense(category_name):
     data = request.args.get('expense')
     category_document = basic_collection.find_one({"name": category_name})
@@ -352,6 +364,7 @@ def remove_expense(category_name):
     return "fail"
 
 @app.route('/get-base', methods=['GET'])
+@login_required
 def get_base():
     documents = basic_collection.find({})
     document_list = [doc for doc in documents]

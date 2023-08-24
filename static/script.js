@@ -360,6 +360,7 @@ function submit_data(){
         console.log(data);
         if(data == "Data inserted"){
             alert("Data Inserted!");
+            window.location.href = "/";
         }else{
             alert("Something happend and data could not be entered!");
         }
