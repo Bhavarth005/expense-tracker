@@ -4,8 +4,12 @@ import json
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from pymongo import ASCENDING
-from flask import Flask, request, Response, render_template, jsonify
 from bson import json_util
+from flask import Flask, render_template, request, redirect, url_for, Response
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+from pymongo import MongoClient
+from bson import ObjectId
 
 # Replace the placeholder with your Atlas connection string
 uri = "mongodb://localhost:27017"
@@ -13,16 +17,106 @@ uri = "mongodb://localhost:27017"
 # Set the Stable API version when creating a new client
 client = MongoClient(uri, server_api=ServerApi('1'))
 
-expense_db = client["expense_tracker"]
-collection = expense_db["expense_income_details"]
-
-# def get_expense(json_data):
-
-# def get_income():
-# def calculate_profit():
-        
-
+db = client["expense_tracker"]
+collection = None 
+basic_collection = None
+username = ""
 app = Flask(__name__)
+app.secret_key = 'secret_key123'
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+
+class User(UserMixin):
+    def __init__(self, user_data):
+        self.id = str(user_data['_id'])  # Convert ObjectId to string
+        self.username = user_data['username']
+        self.password = user_data['password']
+
+@login_manager.user_loader
+def load_user(user_id):
+    user_data = db.users.find_one({'_id': ObjectId(user_id)})
+    if user_data:
+        global collection
+        collection = db["financial_records_"+ username.replace(" ", "_")]
+        global basic_collection
+        basic_collection = db["basic_structure_"+ username.replace(" ", "_")]
+        return User(user_data)
+    
+    return None
+
+@app.route('/create_account', methods=['GET', 'POST'])
+def create_account():
+    if request.method == 'POST':
+        global username
+        username = request.form.get('username')
+        password = request.form.get('password')
+        c_password = request.form.get('c_password')
+
+        #Check if both credenials match
+        if password == c_password:
+            return render_template('register.html', err_msg="Credentials don't match", data1=username)
+
+
+        # Check if the username already exists
+        if db.users.find_one({'username': username}):
+            # flash('err_field_1')
+            return render_template('register.html', err_msg="This username is not available!", data1=username)
+
+        # Create a new user document
+        user_data = {
+            'username': username,
+            'password': generate_password_hash(password),  # Hash the password
+            # Add other user attributes as needed
+        }
+        db.users.insert_one(user_data)
+
+        # Retrieve the newly created user's data
+        user_data = db.users.find_one({'username': username})
+        new_user = User(user_data)
+        # db.create_collection("financial_logs_"+ username.replace(" ", "_"))
+        # db.create_collection("basic_sturcture_"+ username.replace(" ", "_"))
+        global collection
+        collection = db["financial_records_"+ username.replace(" ", "_")]
+        global basic_collection
+        basic_collection = db["basic_structure_"+ username.replace(" ", "_")]
+        login_user(new_user)
+        return redirect(url_for('index'))
+    return render_template('register.html')
+
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    if request.method == 'POST':
+        global username
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        user_data = db.users.find_one({'username': username})
+
+        if not user_data:
+            # flash("err_field_1")
+            return render_template('login.html', err_msg='Username does not exist', data1=username)
+
+        if check_password_hash(user_data['password'], password):
+            user = User(user_data)
+            login_user(user)
+            global collection
+            collection = db["financial_records_"+ username.replace(" ", "_")]
+            global basic_collection
+            basic_collection = db["basic_structure_"+ username.replace(" ", "_")]
+            return redirect(url_for('index'))
+        else:
+            # flash("err_field_2")
+            return render_template('login.html', err_msg="Wrong password", data1=username)
+    return render_template('login.html')
+
+@login_required
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
 
 @app.route('/manage', methods=['GET'])
 def manage():
@@ -176,7 +270,7 @@ def top_cats():
         
     return Response(json.dumps(data, default=json_util.default), content_type='application/json')
 
-@app.route('/', methods=['GET'])
+@app.route('/index', methods=['GET'])
 def index():
     return render_template("index.html")
 
@@ -200,21 +294,19 @@ def insert_frontend():
 
 @app.route('/add-category', methods=['GET'])
 def add_category():
-    collection = expense_db["basic_structure"]
     data = request.args.get('name')
     find_result = collection.find({"name": data})
     if len(list(find_result)) < 1:
         data_dict = {"name": data, "expenses":[]}
         json_data = json.dumps(data_dict)
-        collection.insert_one(data_dict)
+        basic_collection.insert_one(data_dict)
         return "success"
     return "fail"
 
 @app.route('/add-expense/<category_name>', methods=['GET'])
 def add_expense(category_name):
-    collection = expense_db["basic_structure"]
     data = request.args.get('expense')
-    category_document = collection.find_one({"name": category_name})
+    category_document = basic_collection.find_one({"name": category_name})
         
     if category_document:
         expenses = category_document.get("expenses", [])
@@ -222,25 +314,23 @@ def add_expense(category_name):
         if data not in expenses:
             expenses.append(data)
             
-        collection.update_one({"name": category_name}, {"$set": {"expenses": expenses}})
+        basic_collection.update_one({"name": category_name}, {"$set": {"expenses": expenses}})
         
-        updated_category = collection.find_one({"name": category_name})
+        updated_category = basic_collection.find_one({"name": category_name})
         updated_category["_id"] = 0
         return "success"
     return "fail"
 
 @app.route('/remove-category', methods=['GET'])
 def remove_category():
-    collection = expense_db["basic_structure"]
     data = request.args.get('name')
-    collection.delete_one({"name": data})
+    basic_collection.delete_one({"name": data})
     return "success"
 
 @app.route('/remove-expense/<category_name>', methods=['GET'])
 def remove_expense(category_name):
-    collection = expense_db["basic_structure"]
     data = request.args.get('expense')
-    category_document = collection.find_one({"name": category_name})
+    category_document = basic_collection.find_one({"name": category_name})
         
     if category_document:
         expenses = category_document.get("expenses", [])
@@ -248,17 +338,16 @@ def remove_expense(category_name):
         if data in expenses:
             expenses.remove(data)
             
-        collection.update_one({"name": category_name}, {"$set": {"expenses": expenses}})
+        basic_collection.update_one({"name": category_name}, {"$set": {"expenses": expenses}})
         
-        updated_category = collection.find_one({"name": category_name})
+        updated_category = basic_collection.find_one({"name": category_name})
         updated_category["_id"] = 0
         return "success"
     return "fail"
 
 @app.route('/get-base', methods=['GET'])
 def get_base():
-    collection = expense_db["basic_structure"]
-    documents = collection.find({})
+    documents = basic_collection.find({})
     document_list = [doc for doc in documents]
     # json_data = json.loads(list(documents), default=json_util.default)
     base_data = {

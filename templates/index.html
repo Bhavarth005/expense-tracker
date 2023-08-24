@@ -12,6 +12,7 @@
 </head>
 <body>
     <h1 id="title"></h1>
+    <a href="{{url_for('logout')}}">Logout</a>
     <div class="top-cards-container">
         <div class="card profit">
             <div class="left"><p>Profits</p><h1></h1></div>
@@ -46,7 +47,7 @@
         fetch("/get-overall-data").then(response => {
             return response.json()
         }).then(data => {
-            title.innerText = "Overall data";
+            title.innerText = "Overall data of {{ current_user.username }}";
             document.querySelector(".profit h1").innerText = data["profit-ratio"] + "%";
             document.querySelector(".expenses h1").innerText = "₹ " + data["total-expense"];
             document.querySelector(".income h1").innerText = "₹ " + data["total-income"];
