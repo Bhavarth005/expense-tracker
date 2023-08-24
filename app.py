@@ -31,15 +31,17 @@ class User(UserMixin):
         self.id = str(user_data['_id'])  # Convert ObjectId to string
         self.username = user_data['username']
         self.password = user_data['password']
+        self.basic_collection_name = user_data["basic_collection_name"]
+        self.financial_collection_name = user_data["financial_collection_name"]
 
 @login_manager.user_loader
 def load_user(user_id):
     user_data = db.users.find_one({'_id': ObjectId(user_id)})
     if user_data:
         global collection
-        collection = db["financial_records_"+ username.replace(" ", "_")]
+        collection = db[user_data["financial_collection_name"]]
         global basic_collection
-        basic_collection = db["basic_structure_"+ username.replace(" ", "_")]
+        basic_collection = db[user_data["basic_collection_name"]]
         return User(user_data)
     
     return None
@@ -66,19 +68,18 @@ def create_account():
         user_data = {
             'username': username,
             'password': generate_password_hash(password),  # Hash the password
-            # Add other user attributes as needed
+            'basic_collection_name': "basic_structure_" + username,
+            'financial_collection_name': "financial_records_" + username
         }
         db.users.insert_one(user_data)
 
         # Retrieve the newly created user's data
         user_data = db.users.find_one({'username': username})
         new_user = User(user_data)
-        # db.create_collection("financial_logs_"+ username.replace(" ", "_"))
-        # db.create_collection("basic_sturcture_"+ username.replace(" ", "_"))
-        global collection
-        collection = db["financial_records_"+ username.replace(" ", "_")]
-        global basic_collection
-        basic_collection = db["basic_structure_"+ username.replace(" ", "_")]
+        # global collection
+        # collection = db["financial_records_"+ username.replace(" ", "_")]
+        # global basic_collection
+        # basic_collection = db["basic_structure_"+ username.replace(" ", "_")]
         login_user(new_user)
         return redirect(url_for('index'))
     return render_template('register.html')
@@ -102,10 +103,10 @@ def login():
         if check_password_hash(user_data['password'], password):
             user = User(user_data)
             login_user(user)
-            global collection
-            collection = db["financial_records_"+ username.replace(" ", "_")]
-            global basic_collection
-            basic_collection = db["basic_structure_"+ username.replace(" ", "_")]
+            # global collection
+            # collection = db["financial_records_"+ username.replace(" ", "_")]
+            # global basic_collection
+            # basic_collection = db["basic_structure_"+ username.replace(" ", "_")]
             return redirect(url_for('index'))
         else:
             # flash("err_field_2")
