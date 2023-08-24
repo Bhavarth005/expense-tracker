@@ -38,11 +38,13 @@
 
         <div class="list-container">
             <div class="left">
-                <p>Profit Ratio</p>
-                <div class="graph">
-                    <h1 id="percent_display"></h1>
-                    <div class="donut"></div>
-                    <div class="donut-bg"></div>
+                <p>Expenses</p>
+                <div class="graph-list-container">
+                    <div class="graph">
+                        <h1 id="percent_display"></h1>
+                        <div class="donut-bg" id="donut-bg"></div>
+                    </div>
+                    <div class="list"></div>
                 </div>
             </div>
             <div class="right">
@@ -85,6 +87,7 @@
             }
             }
         let overall_data = {}
+        let total_income;
 
         fetch("/view?data={{month_name}}").then(response => {
             return response.json()
@@ -95,36 +98,11 @@
             document.querySelector(".profit h1").innerText = data["profit"] + "%";
             document.querySelector(".expenses h1").innerText = "₹ " + data["total_expense"];
             document.querySelector(".income h1").innerText = "₹ " + data["income"];
-
-            update_percent(parseFloat(data["profit"]));
-            percent_display.innerText = data["profit"] + "%";
+            total_income = parseInt(data["income"]);
         });
         
 
         let list = document.querySelector(".records-list");
-
-        fetch("/get-sorted-expenses/{{month_name}}").then(res => {
-            return res.json();
-        }).then(data => {
-            // console.log(data);
-            data.forEach(expense => {
-                console.log(expense.amt);
-                const amt = Math.round(parseFloat(expense.amt_inr));
-                let a = document.createElement("a");
-                a.className = "month-record";
-                let p = document.createElement("p");
-                p.className = "link-left";
-                p.innerText = expense.name;
-                a.appendChild(p);
-
-                let p2 = document.createElement("p");
-                p2.className = "link-right";
-                p2.innerText = '₹ ' + amt;
-
-                a.appendChild(p2);
-                list.appendChild(a);
-            });
-        })
 
         fetch("/get-sorted-expenses/{{month_name}}").then(res => {
             return res.json();
@@ -212,6 +190,65 @@
                 })
             }
         }
+
+        function rand_int(start, end){
+            return Math.floor(Math.random() * (end - start + 1)) + start;
+        }
+
+        let lastSlice = null;
+        let lastPercent;
+
+        function get_legend(text, color){
+            let div = document.createElement("div");
+            div.style.height = "20px";
+            div.style.width = "20px";
+            div.style.background = color;
+
+            let p = document.createElement("p");
+            p.appendChild(div);
+            p.innerHTML += text;
+
+            return p;
+        }
+
+        function add_slice(percent, color){
+            console.log(percent);
+            let graph = document.querySelector(".graph");
+            let donut_bg = document.querySelector(".donut-bg");
+            
+            let new_donut = document.createElement("div");
+            new_donut.className = "donut";
+            new_donut.style.clipPath = get_clip_path(percent);
+            new_donut.style.borderColor = color;
+            new_donut.style.position = "absolute";
+
+            if(lastSlice){
+                graph.insertBefore(new_donut, lastSlice);
+            }else{
+                graph.appendChild(new_donut);
+            }
+            lastSlice = new_donut;
+        }
+
+        fetch("/top-cats").then(res => {
+            return res.json()
+        }).then(data => {
+            let static_percent = 0;
+            
+            let list = document.querySelector(".graph-list-container .list");
+
+            for(const cat in data){
+                let amount = data[cat];
+                static_percent += (amount * 100)/total_income;
+                console.log(static_percent);
+
+                let random_color = `rgb(${rand_int(0, 255)}, ${rand_int(0, 255)}, ${rand_int(0, 255)})`;
+                add_slice(static_percent, random_color);
+                
+                list.appendChild(get_legend(cat, random_color));
+            }
+            list.appendChild(get_legend("Profit", "#444"));
+        })
 
     </script>
 </body>

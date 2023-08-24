@@ -153,7 +153,21 @@ body{
     gap: 5px;
 }
 
+.graph-list-container{
+    display: flex;
+}
+
+.graph-list-container .list{
+    flex: 1;
+}
+
+.graph-list-container .list p{
+    display: flex;
+    gap: 10px;
+}
+
 .graph{
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -164,12 +178,12 @@ body{
     width: 150px;
     border-radius: 50%;
     z-index: 10;
+    position: absolute;
     border: 50px solid #007aff;
 }
 
 .donut-bg{
     height: 150px;
-    position: absolute;
     width: 150px;
     border-radius: 50%;
     border: 50px solid #444;

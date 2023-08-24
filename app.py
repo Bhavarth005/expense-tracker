@@ -293,6 +293,7 @@ def sorted_expenses_loc(month):
 def top_cats():
     categories_expenses = defaultdict(float)
 
+# Iterate through documents in the collection
     for document in collection.find():
         for category in document['categories']:
             for expense in category['expenses']:
