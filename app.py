@@ -168,13 +168,12 @@ def logout():
 
 def getINR(amt, cur):
     amt = int(amt)
-    match cur: 
-        case "USD":
-            return amt * 82.73
-        case "GBP": 
-            return amt * 104.53
-        case "EUR":
-            return amt * 89.43
+    if amt == "USD":
+        return amt * 82.73
+    elif amt == "GBP": 
+        return amt * 104.53
+    elif amt == "EUR":
+        return amt * 89.43
     return amt
             
 
