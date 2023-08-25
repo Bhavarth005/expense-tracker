@@ -24,6 +24,8 @@
         </form>
     </div>
 
+    {% include 'footer.html' %}
+
     {% with msg=get_flashed_messages() %}
         {% if msg[0]  %}
             <script>alert("{{ msg[0] }}")</script>

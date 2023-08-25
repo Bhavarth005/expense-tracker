@@ -249,7 +249,6 @@ body{
     background: #007aff;
     padding: 10px;
     border-radius: 5px;
-    border: 1px solid #1586ff;
 }
 
 .top-data a:hover{
@@ -273,15 +272,12 @@ body{
     border-radius: 5px;
 }
 
-.btns a:nth-child(1){
-    background: #007aff;
-}
 
-.btns a:nth-child(2){
+.btns .delete-record{
     background: #a00;
 }
 
-.btns a:nth-child(3){
+.btns .edit{
     background: #0a0;
 }
 

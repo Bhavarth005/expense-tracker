@@ -32,6 +32,9 @@
             <p id="Register_text">Already registered? <a href="{{url_for('login')}}">Login Here</a></p>
         </form>
     </div>
+
+    {% include 'footer.html' %}
+
     {% with msg=get_flashed_messages() %}
         {% if msg[0]  %}
             <script>alert("{{ msg[0] }}")</script>

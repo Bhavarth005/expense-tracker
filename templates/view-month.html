@@ -57,6 +57,9 @@
         <div class="world-view"></div>
     </div>
 
+    {% include 'footer.html' %}
+
+
     <script>
         function formatDate(input) {
             console.log(input);
@@ -82,11 +85,11 @@
             const fullMonth = monthAbbreviations[monthAbbreviation];
 
             if (fullMonth) {
-                return `${fullMonth}, ${year}`;
+                return `${fullMonth}, 20${year}`;
             } else {
                 return 'Invalid input';
             }
-            }
+        }
         let overall_data = {}
         let total_income;
 
@@ -95,7 +98,7 @@
         }).then(data => {
             data = data[0];
             console.log(data);
-            title.innerText = "{{ current_user.username }}'s data of {{month_name}}";
+            title.innerText = `{{ current_user.username }}'s data of ${ formatDate('{{month_name}}') }`;
             document.querySelector(".profit h1").innerText = data["profit"] + "%";
             document.querySelector(".expenses h1").innerText = "₹ " + data["total_expense"];
             document.querySelector(".income h1").innerText = "₹ " + data["income"];

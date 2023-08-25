@@ -22,7 +22,7 @@ function formatDate(input) {
     const fullMonth = monthAbbreviations[monthAbbreviation];
 
     if (fullMonth) {
-        return `${fullMonth}, ${year}`;
+        return `${fullMonth}, 20${year}`;
     } else {
         return 'Invalid input';
     }

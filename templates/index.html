@@ -54,6 +54,8 @@
         <div class="world-view"></div>
     </div>
 
+    {% include 'footer.html' %}
+
     <script>
         function formatDate(input) {
             console.log(input);
@@ -79,7 +81,7 @@
             const fullMonth = monthAbbreviations[monthAbbreviation];
 
             if (fullMonth) {
-                return `${fullMonth}, ${year}`;
+                return `${fullMonth}, 20${year}`;
             } else {
                 return 'Invalid input';
             }
