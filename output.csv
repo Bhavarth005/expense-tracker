@@ -1,8 +1,10 @@
-profit,,93.83,,,
-total_expenses,,73986,,,
+profit,,92.83,,,
+total_expenses,,89774,,,
 month,,AUG_23,,,
 category,name,amt,cur,loc,amt_inr
-Server,AWS,123,USD,USA,10176
-Server,Google Cloud,5500,INR,INDIA,5500
-Services,Cpanel,510,GBP,UK,53310
-Services,Cloudflare,5000,INR,INDIA,5000
+Server,AWS,5000,INR,INDIA,5000
+Server,Google Cloud,450,USD,USA,37228
+Services,CPanel,200,USD,USA,16546
+Services,Cloudflare,10000,INR,INDIA,10000
+Management,Tax,15000,INR,INDIA,15000
+Management,Food,6000,INR,INDIA,6000
