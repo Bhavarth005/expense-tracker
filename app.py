@@ -1,12 +1,13 @@
 from collections import defaultdict
 import heapq
+import io
 import json
 import csv
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from pymongo import ASCENDING
 from bson import json_util
-from flask import Flask, render_template, request, redirect, url_for, Response, flash, get_flashed_messages
+from flask import Flask, make_response, render_template, request, redirect, url_for, Response, flash, get_flashed_messages
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from pymongo import MongoClient
@@ -259,97 +260,112 @@ def view_data():
 def view_month(month):
     return render_template("view-month.html", month_name=month)
 
+from flask import make_response
+
 @app.route("/generate-csv/<month>", methods=["GET"])
 @login_required
 def generate_csv(month):
     results = collection.find({"date": month})
-    
-    csv_file = "output.csv"
-    with open(csv_file, mode='w', newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=['category', 'name', 'amt', 'cur', 'loc', 'amt_inr'])
-        
-        # Convert cursor to a list of dictionaries
-        for document in results:
-            # Write profit, total_expenses, and month rows
-            writer.writerow({
-                'category': 'profit',
-                'name': '',
-                'amt': document['profit'],
-                'cur': '',
-                'loc': '',
-                'amt_inr': ''
-            })
-            writer.writerow({
-                'category': 'total_expenses',
-                'name': '',
-                'amt':  document['total_expense'],
-                'cur': '',
-                'loc': '',
-                'amt_inr':''
-            })
-            writer.writerow({
-                'category': 'month',
-                'name': '',
-                'amt': month,
-                'cur': '',
-                'loc': '',
-                'amt_inr': ''
-            })
-            
-            # Write the header row
-            writer.writeheader()
-            
-            for category in document['categories']:
-                for expense in category['expenses']:
-                    # Remove the 'id' field
-                    expense.pop('id', None)
-                    expense['category'] = category['name']
-                    writer.writerow(expense)
-    
-    return "printed"
+
+    # Create a stream to hold CSV data
+    csv_stream = io.StringIO()
+
+    # Initialize the CSV writer with the stream
+    writer = csv.DictWriter(csv_stream, fieldnames=['category', 'name', 'amt', 'cur', 'loc', 'amt_inr'])
+
+    # Write the CSV data to the stream
+
+    for document in results:
+        writer.writerow({
+            'category': 'profit',
+            'name': '',
+            'amt': document['profit'],
+            'cur': '',
+            'loc': '',
+            'amt_inr': ''
+        })
+        writer.writerow({
+            'category': 'total_expenses',
+            'name': '',
+            'amt': document['total_expense'],
+            'cur': '',
+            'loc': '',
+            'amt_inr': ''
+        })
+        writer.writerow({
+            'category': 'month',
+            'name': '',
+            'amt': month,
+            'cur': '',
+            'loc': '',
+            'amt_inr': ''
+        })
+
+        writer.writeheader()
+        for category in document['categories']:
+            for expense in category['expenses']:
+                expense.pop('id', None)
+                expense['category'] = category['name']
+                writer.writerow(expense)
+    csv_stream.seek(0)
+    csv_data = csv_stream.getvalue()
+
+    response = make_response(csv_data)
+    response.headers["Content-Disposition"] = f"attachment; filename=output_{month}.csv"
+    response.headers["Content-type"] = "text/csv"
+
+    return response
+
 
 @app.route("/generate-csv-all", methods=["GET"])
 @login_required
 def generate_csv_all():
     all_results = collection.find()  # Retrieve all records
     
-    csv_file = "output_all.csv"
-    with open(csv_file, mode='w', newline='') as file:
-        writer = csv.writer(file)
+    csv_stream = io.StringIO()
+
+# Initialize the CSV writer with the stream
+    writer = csv.writer(csv_stream)        
+    category_totals = defaultdict(int)
+    expense_totals = defaultdict(int)
+    
+    for idx, document in enumerate(all_results):
+        # Write profit, total_expenses, and date rows
+        writer.writerow(['profit', '', document['profit']])
+        writer.writerow(['total_expenses', '', document['total_expense']])
+        writer.writerow(['date', '', document['date']])
         
-        category_totals = defaultdict(int)
-        expense_totals = defaultdict(int)
+        # Write the header row
+        writer.writerow(['category', 'name', 'amt', 'cur', 'loc', 'amt_inr'])
         
-        for idx, document in enumerate(all_results):
-            # Write profit, total_expenses, and date rows
-            writer.writerow(['profit', '', document['profit']])
-            writer.writerow(['total_expenses', '', document['total_expense']])
-            writer.writerow(['date', '', document['date']])
+        for category in document['categories']:
+            for expense in category['expenses']:
+                writer.writerow([category['name'], expense['name'], expense['amt'], expense['cur'], expense['loc'], expense['amt_inr']])
+                category_totals[category['name']] += int(expense['amt_inr'])
+                expense_totals[expense['name']] += int(expense['amt_inr'])
             
-            # Write the header row
-            writer.writerow(['category', 'name', 'amt', 'cur', 'loc', 'amt_inr'])
-            
-            for category in document['categories']:
-                for expense in category['expenses']:
-                    writer.writerow([category['name'], expense['name'], expense['amt'], expense['cur'], expense['loc'], expense['amt_inr']])
-                    category_totals[category['name']] += int(expense['amt_inr'])
-                    expense_totals[expense['name']] += int(expense['amt_inr'])
-                
-            writer.writerow([])  # Insert an empty row after each month's data
-            
-        # Write the total amount spent per category
-        writer.writerow(['Total Category Amounts'])
-        for category_name, category_total in category_totals.items():
-            writer.writerow([category_name, 'Total:', '', '', '', category_total])
-            
-        writer.writerow([])  # Insert an empty row after the category totals
+        writer.writerow([])  # Insert an empty row after each month's data
         
-        # Write the total amount spent per expense
-        writer.writerow(['Total Expense Amounts'])
-        for expense_name, expense_total in expense_totals.items():
-            writer.writerow([expense_name, 'Total:', '', '', '', expense_total])
+    # Write the total amount spent per category
+    writer.writerow(['Total Category Amounts'])
+    for category_name, category_total in category_totals.items():
+        writer.writerow([category_name, 'Total:', '', '', '', category_total])
         
-    return "printed"
+    writer.writerow([])  # Insert an empty row after the category totals
+    
+    # Write the total amount spent per expense
+    writer.writerow(['Total Expense Amounts'])
+    for expense_name, expense_total in expense_totals.items():
+        writer.writerow([expense_name, 'Total:', '', '', '', expense_total])
+    
+    csv_stream.seek(0)
+    csv_data = csv_stream.getvalue()
+
+    response = make_response(csv_data)
+    response.headers["Content-Disposition"] = "attachment; filename=output_all.csv"
+    response.headers["Content-type"] = "text/csv"
+
+    return response
 
 
 
