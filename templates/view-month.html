@@ -249,7 +249,11 @@
                 let random_color = `rgb(${rand_int(0, 255)}, ${rand_int(0, 255)}, ${rand_int(0, 255)})`;
                 add_slice(static_percent, random_color);
                 
-                list.appendChild(get_legend(cat + ` (${(amount * 100)/total_income}%)`, random_color));
+                let percent = (amount * 100)/total_income;
+                
+                percent = (percent.toFixed(2));
+
+                list.appendChild(get_legend(cat + ` (${percent}%)`, random_color));
             }
             list.appendChild(get_legend("Profit", "#444"));
         })

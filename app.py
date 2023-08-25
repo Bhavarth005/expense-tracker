@@ -326,8 +326,7 @@ def get_years():
     
     unique_years_cursor = collection.aggregate(pipeline)
     unique_years = [record["_id"] for record in unique_years_cursor]
-    print(unique_years)
-    return "jaa k console dekh"
+    return unique_years
 
 @app.route("/generate-annual-csv/<year>", methods=["GET"])
 @login_required

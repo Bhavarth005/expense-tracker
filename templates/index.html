@@ -20,7 +20,7 @@
             <h1 id="title"></h1>
             <div class="download-report">
                 <select id="year-select"></select>
-                <a href="#">Download Report</a>
+                <a onclick="download_selected_report()">Download Report</a>
             </div>
             <!-- <a onclick="download_overall_report()">Download Overall report</a> -->
         </div>
@@ -99,12 +99,39 @@
             return opt;
         }
 
-        let years = ["23", "24", "25"];
         let year_select = document.querySelector("#year-select");
         year_select.appendChild(getOption("overall", "All Years"));
-        years.forEach(year => {
-            year_select.appendChild(getOption(year, "20"+year));
-        })
+        fetch("/get-years").then(res => {
+            return res.json()
+        }).then(data => {
+            data.forEach(year => {
+                year_select.appendChild(getOption(year, "20"+year));
+            })
+        });
+
+        function download_selected_report(){
+            let year = document.querySelector("#year-select").value;
+            if(year == "overall"){
+                download_overall_report();
+            }else{
+                fetch(`/generate-annual-csv/${year}`).then(res => {
+                    return res.text();
+                }).then(data => {
+                    const blob = new Blob([data], { type: 'text/csv' });
+
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `report-20${year}.csv`;
+
+                    // Append the link to the DOM and simulate a click to trigger download
+                    document.body.appendChild(link);
+                    link.click();
+
+                    // Clean up by removing the link
+                    document.body.removeChild(link);
+                })
+            }
+        }
 
         let lastSlice = null;
         let lastPercent;
@@ -285,8 +312,12 @@
 
                 let random_color = `rgb(${rand_int(0, 255)}, ${rand_int(0, 255)}, ${rand_int(0, 255)})`;
                 add_slice(static_percent, random_color);
+
+                let percent = (amount * 100)/total_income;
                 
-                list.appendChild(get_legend(cat + ` (${(amount * 100)/total_income}%)`, random_color));
+                percent = (percent.toFixed(2));
+                
+                list.appendChild(get_legend(cat + ` (${percent}%)`, random_color));
             }
             list.appendChild(get_legend("Profit", "#444"));
         })
