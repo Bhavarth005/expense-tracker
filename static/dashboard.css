@@ -243,6 +243,20 @@ body{
     justify-content: space-between;
 }
 
+.top-data a{
+    text-decoration: none;
+    color: #fff;
+    background: #007aff;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #1586ff;
+}
+
+.top-data a:hover{
+    filter: brightness(90%);
+    cursor: pointer;
+}
+
 .btns{
     display: flex;
     align-items: stretch;
@@ -273,5 +287,26 @@ body{
 
 .btns a img{
     height: 20px;
+    filter: invert(1);
+}
+
+.link-right-container{
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.link-right-container button{
+    font: inherit;
+    font-size: 12px;
+    width: 35px;
+    aspect-ratio: 1;
+    background-color: rgb(255, 133, 0);
+    border: none;
+    outline: none;
+    background-size: 80%;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 5px;
     filter: invert(1);
 }

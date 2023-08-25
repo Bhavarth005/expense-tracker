@@ -17,6 +17,7 @@
     <div class="container">
         <div class="top-data">
             <h1 id="title"></h1>
+            <a onclick="download_overall_report()">Download Overall report</a>
         </div>
     <div class="top-cards-container">
         <div class="card profit">
@@ -125,6 +126,10 @@
 
         let total_income;
 
+        function download_overall_report(){
+            alert("Downloading overall report");
+        }
+
         fetch("/get-overall-data").then(response => {
             return response.json()
         }).then(data => {
@@ -151,11 +156,27 @@
                 p.innerText = formatDate(month);
                 a.appendChild(p);
 
+                let link_right_container = document.createElement("div");
+                link_right_container.className = "link-right-container";
+
                 let p2 = document.createElement("p");
                 p2.className = "link-right";
-                p2.innerText = profit + " %";
+                p2.innerText = profit + "%";
 
-                a.appendChild(p2);
+                let report_btn = document.createElement("button");
+                report_btn.className = "report-btn";
+                report_btn.onclick = (e) => {
+                    if(e.target.tagName == "BUTTON"){
+                        e.preventDefault();
+                        alert(`Downloading report of ${month}`);
+                    }
+                }
+                report_btn.style.backgroundImage = `url("{{ url_for('static', filename='download.png') }}")`;
+
+                link_right_container.appendChild(p2);
+                link_right_container.appendChild(report_btn);
+                
+                a.appendChild(link_right_container);
                 list.appendChild(a);
             }
         })
@@ -198,10 +219,6 @@
                 world_view.appendChild(country_div);
             }
         })
-
-        function load_data(month){
-            console.log("Loading data " + month);
-        }
 
         fetch("/top-cats-overall").then(res => {
             return res.json()
