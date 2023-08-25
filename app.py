@@ -266,21 +266,161 @@ def generate_csv(month):
     
     csv_file = "output.csv"
     with open(csv_file, mode='w', newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=['name', 'amt', 'cur', 'loc', 'id', 'amt_inr'])
-        
-        # Write the header row
-        writer.writeheader()
+        writer = csv.DictWriter(file, fieldnames=['category', 'name', 'amt', 'cur', 'loc', 'amt_inr'])
         
         # Convert cursor to a list of dictionaries
         for document in results:
+            # Write profit, total_expenses, and month rows
+            writer.writerow({
+                'category': 'profit',
+                'name': '',
+                'amt': document['profit'],
+                'cur': '',
+                'loc': '',
+                'amt_inr': ''
+            })
+            writer.writerow({
+                'category': 'total_expenses',
+                'name': '',
+                'amt':  document['total_expense'],
+                'cur': '',
+                'loc': '',
+                'amt_inr':''
+            })
+            writer.writerow({
+                'category': 'month',
+                'name': '',
+                'amt': month,
+                'cur': '',
+                'loc': '',
+                'amt_inr': ''
+            })
+            
+            # Write the header row
+            writer.writeheader()
+            
             for category in document['categories']:
                 for expense in category['expenses']:
+                    # Remove the 'id' field
+                    expense.pop('id', None)
+                    expense['category'] = category['name']
                     writer.writerow(expense)
+    
+    return "printed"
+@app.route("/generate-csv-all", methods=["GET"])
+@login_required
+def generate_csv_all():
+    all_results = collection.find()  # Retrieve all records
+    
+    csv_file = "output_all.csv"
+    with open(csv_file, mode='w', newline='') as file:
+        writer = csv.DictWriter(file, fieldnames=['category', 'name', 'amt', 'cur', 'loc', 'amt_inr'])
+        
+        # Convert cursor to a list of dictionaries
+        all_expenses = []
+        for idx, document in enumerate(all_results):
+            # Write profit, total_expenses, and date rows
+            writer.writerow({
+                'category': 'profit',
+                'name': '',
+                'amt': document['profit'],
+                'cur': '',
+                'loc': '',
+                'amt_inr': ''
+            })
+            writer.writerow({
+                'category': 'total_expenses',
+                'name': '',
+                'amt': document['total_expense'],
+                'cur': '',
+                'loc': '',
+                'amt_inr':''
+            })
+            writer.writerow({
+                'category': 'date',
+                'name': '',
+                'amt': document['date'],
+                'cur': '',
+                'loc': '',
+                'amt_inr': ''
+            })
+            
+            for category in document['categories']:
+                for expense in category['expenses']:
+                    expense.pop('id', None)
+                    row_data = {
+                        'category': category['name'],
+                        'name': expense['name'],
+                        'amt': expense['amt'],
+                        'cur': expense['cur'],
+                        'loc': expense['loc'],
+                        'amt_inr': expense['amt_inr']
+                    }
+                    all_expenses.append(row_data)
+            
+        # Write the header row
+        writer.writeheader()
+        
+        for expense in all_expenses:
+            writer.writerow(expense)
+            
+        # Write the total amount spent per category
+        writer.writerow({
+            'category': 'Total Category Amounts',
+            'name': '',
+            'amt': '',
+            'cur': '',
+            'loc': '',
+            'amt_inr': ''
+        })
+        category_totals = {}
+        for expense in all_expenses:
+            category_name = expense['category']
+            if category_name not in category_totals:
+                category_totals[category_name] = int(expense['amt_inr'])
+            else:
+                category_totals[category_name] += int(expense['amt_inr'])
+        
+        for category_name, category_total in category_totals.items():
+            writer.writerow({
+                'category': category_name,
+                'name': 'Total:',
+                'amt': '',
+                'cur': '',
+                'loc': '',
+                'amt_inr': category_total
+            })
+        
+        # Write the total amount spent per expense
+        writer.writerow({
+            'category': 'Total Expense Amounts',
+            'name': '',
+            'amt': '',
+            'cur': '',
+            'loc': '',
+            'amt_inr': ''
+        })
+        expense_totals = {}
+        for expense in all_expenses:
+            expense_name = expense['name']
+            if expense_name not in expense_totals:
+                expense_totals[expense_name] = int(expense['amt_inr'])
+            else:
+                expense_totals[expense_name] += int(expense['amt_inr'])
+        
+        for expense_name, expense_total in expense_totals.items():
+            writer.writerow({
+                'category': expense_name,
+                'name': 'Total:',
+                'amt': '',
+                'cur': '',
+                'loc': '',
+                'amt_inr': expense_total
+            })
+    
     return "printed"
 
 
-    # return(f"Data for {month} has been converted and saved to {csv_file}")
-    # Provide some user feedback or redirect here
 
 
 @app.route("/get-sorted-expenses/<month>", methods=["GET"])
