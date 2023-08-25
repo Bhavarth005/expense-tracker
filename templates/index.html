@@ -18,7 +18,11 @@
     <div class="container">
         <div class="top-data">
             <h1 id="title"></h1>
-            <a onclick="download_overall_report()">Download Overall report</a>
+            <div class="download-report">
+                <select id="year-select"></select>
+                <a href="#">Download Report</a>
+            </div>
+            <!-- <a onclick="download_overall_report()">Download Overall report</a> -->
         </div>
     <div class="top-cards-container">
         <div class="card profit">
@@ -88,6 +92,20 @@
         }
         let overall_data = {}
 
+        function getOption(val, text){
+            let opt = document.createElement("option");
+            opt.value = val;
+            opt.innerText = text;
+            return opt;
+        }
+
+        let years = ["23", "24", "25"];
+        let year_select = document.querySelector("#year-select");
+        year_select.appendChild(getOption("overall", "All Years"));
+        years.forEach(year => {
+            year_select.appendChild(getOption(year, "20"+year));
+        })
+
         let lastSlice = null;
         let lastPercent;
 
@@ -130,7 +148,22 @@
         let total_income;
 
         function download_overall_report(){
-            alert("Downloading overall report");
+            fetch(`/generate-csv-all`).then(res => {
+                return res.text();
+            }).then(data => {
+                const blob = new Blob([data], { type: 'text/csv' });
+
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `overall-report.csv`;
+
+                // Append the link to the DOM and simulate a click to trigger download
+                document.body.appendChild(link);
+                link.click();
+
+                // Clean up by removing the link
+                document.body.removeChild(link);
+            })
         }
 
         fetch("/get-overall-data").then(response => {
@@ -171,7 +204,22 @@
                 report_btn.onclick = (e) => {
                     if(e.target.tagName == "BUTTON"){
                         e.preventDefault();
-                        alert(`Downloading report of ${month}`);
+                        fetch(`/generate-csv/${month}`).then(res => {
+                            return res.text();
+                        }).then(data => {
+                            const blob = new Blob([data], { type: 'text/csv' });
+
+                            const link = document.createElement('a');
+                            link.href = URL.createObjectURL(blob);
+                            link.download = `report-${month}.csv`;
+
+                            // Append the link to the DOM and simulate a click to trigger download
+                            document.body.appendChild(link);
+                            link.click();
+
+                            // Clean up by removing the link
+                            document.body.removeChild(link);
+                        })
                     }
                 }
                 report_btn.style.backgroundImage = `url("{{ url_for('static', filename='download.png') }}")`;

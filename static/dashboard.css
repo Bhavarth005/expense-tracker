@@ -306,3 +306,18 @@ body{
     border-radius: 5px;
     filter: invert(1);
 }
+
+
+.top-data .download-report{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#year-select{
+    padding: 9px;
+    border-radius: 5px;
+    font: inherit;
+    background: #333;
+    color: #fff;
+}
