@@ -8,6 +8,7 @@ nav{
     box-sizing: border-box;
     width: 100%;
     z-index: 99;
+    box-shadow: 0 5px 10px #0003;
 }
 
 nav .left{
