@@ -1,0 +1,22 @@
+profit,,93.83,,,
+total_expenses,,73986,,,
+date,,AUG_23,,,
+profit,,90.83,,,
+total_expenses,,7386,,,
+date,,SEPT_23,,,
+category,name,amt,cur,loc,amt_inr
+Server,AWS,123,USD,USA,10176
+Server,Google Cloud,5500,INR,INDIA,5500
+Services,Cpanel,510,GBP,UK,53310
+Services,Cloudflare,5000,INR,INDIA,5000
+Server,AWS,123,USD,USA,10176
+Server,Google Cloud,5500,INR,INDIA,5500
+Services,Cpanel,510,GBP,UK,53310
+Total Category Amounts,,,,,
+Server,Total:,,,,31352
+Services,Total:,,,,111620
+Total Expense Amounts,,,,,
+AWS,Total:,,,,20352
+Google Cloud,Total:,,,,11000
+Cpanel,Total:,,,,106620
+Cloudflare,Total:,,,,5000
