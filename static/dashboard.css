@@ -1,71 +1,3 @@
-/* body{
-    background-color: rgb(0, 0, 0);
-    color: whitesmoke;
-    font-family: 'Ubuntu', sans-serif;;
-}
-.top-cards-container{
-    display: flex;
-    width: 90vw;
-    margin-left: 5vw;
-    gap: 20px;
-    justify-content: space-around;
-}
-#title{
-    text-align: center;
-}
-.card{
-    flex: 1;
-    color: rgb(218, 218, 223);
-    padding: 10px;
-    border-radius: 8px;
-    background-color: #61677A;
-}
-
-.list-container{
-    display: flex;
-    width: 90vw;
-    margin-left: 5vw;
-    margin-top: 8vh;
-    height: 50vh;
-    justify-content: space-around;
-    gap: 20px;
-}
-.list-container .left
-{
-    flex: 1;
-    border: 1px solid whitesmoke;
-    border-radius: 5px;
-    padding: 10px;
-}
-.list-container .right
-{
-    border: 1px solid whitesmoke;
-    border-radius: 5px;
-    flex: 2;
-    padding: 10px;
-}
-.list-container .left .graph
-{
-    border: 1px solid white;
-    border-radius: 5px;
-    height: 80%;
-    margin-top: 5%;
-    text-align: center;
-}
-
-.records-list{
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-.records-list hr{
-    width: 100%;
-}
-.records-list a{
-    text-decoration: none;
-    color: whitesmoke;
-    margin: 5px;
-} */
 
 *{
     margin: 0;
@@ -320,4 +252,30 @@ body{
     font: inherit;
     background: #333;
     color: #fff;
+}
+
+@media(max-width: 720px){
+    #title{
+        font-size: 25px;
+    }
+    .top-data{
+        flex-direction: column;
+        gap: 20px;
+    }
+    .top-cards-container{
+        flex-direction: column;
+    }
+    .list-container{
+        display: flex;
+        flex-direction: column;
+    }
+    .list-container .left .graph-list-container{
+        flex-direction: column;
+        gap: 30px;
+    }
+    .world-view{
+        display: flex;
+        gap: 20px;
+        flex-direction: column;
+    }
 }

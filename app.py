@@ -1,5 +1,4 @@
 from collections import defaultdict
-import heapq
 import io
 import json
 import csv
