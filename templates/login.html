@@ -11,9 +11,9 @@
 <body>
     <div class="main-container">
         <div class="logo-container">
-            <h1>Expense Tracker</h1>
+            <img src="{{ url_for('static', filename='logo.png') }}" class="logo">
         </div>
-        <h1 class="heading">Login to Expense Tracker</h1>
+        <h1 class="heading" style="text-align: center;">Login</h1>
         <form action="{{url_for('login')}}" method="POST" class="form">
             <p class="field-label">Username</p>
             <input type="text" name="username" id="username" placeholder="Enter Username" required autocomplete="off">
