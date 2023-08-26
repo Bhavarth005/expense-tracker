@@ -50,12 +50,25 @@
 
         function open_menu(){
             profile.setAttribute("onclick", "close_menu()");
+            if(!main_menu_stat){
+                overlay = document.createElement("div");
+                overlay.style.height = "100vh";
+                overlay.style.width = "100vw";
+                overlay.style.zIndex = "99999999";
+                overlay.style.background = "#0008";
+                overlay.style.position = "fixed";
+                overlay.style.top = "0";
+                overlay.style.left = "0";
+                overlay.onclick = () => {close_menu()}
+                document.body.appendChild(overlay);
+            }
             document.querySelector("nav").classList.add("user-menu-open");
         }
 
         function close_menu(){
             profile.setAttribute("onclick", "open_menu()");
-            overlay.remove();
+            if(!main_menu_stat)
+                overlay.remove();
             document.querySelector("nav").classList.remove("user-menu-open");
         }
     </script>
