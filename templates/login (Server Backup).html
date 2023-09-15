@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Form</title>
+    <link rel="stylesheet" href="../static/login.css">
+    <link rel="shortcut icon" href="{{url_for('static', filename = 'icon.png')}}" type="image/png">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+	<script>
+		    function onSubmit(token) {
+			          alert('thanks ' + document.getElementById('field').value);
+			        }
+
+    function validate(event) {
+	          event.preventDefault();
+	          if (!document.getElementById('field').value) {
+			          alert("You must add text to the required field");
+			        } else {
+					        grecaptcha.execute();
+					      }
+	        }
+
+    function onload() {
+	          var element = document.getElementById('find-btn');
+	          element.onclick = validate;
+	        }
+    form.onSubmit = (e) => {
+	            e.preventDefault();
+	        }
+  </script>
+
+
+<body>
+	{% include 'main-nav.html' %}
+    <div class="main-container">
+        <div class="logo-container">
+            <img src="{{ url_for('static', filename='logo.png') }}" class="logo">
+        </div>
+        <h1 class="heading" style="text-align: center;">Login</h1>
+        <form action="{{url_for('login')}}" method="POST" class="form">
+            <p class="field-label">Username</p>
+            <input type="text" name="username" id="username" placeholder="Enter Username" required autocomplete="off">
+            <p class="field-label label-pw">Password</p>
+            <input type="password" name="password" id="password" placeholder="Enter Password" required>
+            <input type="submit" value="Login">
+            <p id="Register_text">New User? <a href="{{url_for('create_account')}}">Register Here</a></p>
+        </form>
+    </div>
+    <div id="recaptcha" class="g-recaptcha"
+	              data-sitekey="6LfVl-MnAAAAAGhFSEGZiVKQ8tCLDcDFJ-kPIiJr"
+		                data-callback="onSubmit"
+				          data-size="invisible">
+	        </div>
+
+    {% include 'footer.html' %}
+
+    {% with msg=get_flashed_messages() %}
+        {% if msg[0]  %}
+            <script>alert("{{ msg[0] }}")</script>
+        {% endif %}
+    {% endwith %}
+</body>
+</html>

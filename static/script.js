@@ -1,5 +1,4 @@
 function formatDate(input) {
-    console.log(input);
     const monthAbbreviations = {
         JAN: 'January',
         FEB: 'February',
@@ -97,10 +96,10 @@ class Expense{
         }
 
         if(confirm("Do you also want to remove it from the basic structure?")){
-            console.log(this.category.name);
-            console.log(this.name);
+            // console.log(this.category.name);
+            // console.log(this.name);
             let url = `/remove-expense/${this.category.name}?expense=${this.name}`;
-            console.log(url);
+            // console.log(url);
 
             fetch(url).then(function (response) {
                 // Waiting for response
@@ -122,7 +121,8 @@ class Expense{
         // MAIN DIV
         let expenseDiv = createElementWithClassName("div", "expense");
         expenseDiv.setAttribute("data-expense-id", this.id);
-
+	
+	    let expenseTitleContainer = createElementWithClassName("div", "expense-title-container");
 
         // P TAG (EXPENSE TITLE)
         let expenseTitle = createElementWithClassName("p", "expense-title");
@@ -135,7 +135,13 @@ class Expense{
             expenseTitle.contentEditable = false;
             this.handleNameEdit(e);
         }
-        expenseDiv.appendChild(expenseTitle);
+        expenseTitleContainer.appendChild(expenseTitle);
+
+        let pencil_icon = document.createElement("img");
+        pencil_icon.src = "../../static/edit.png";
+        expenseTitleContainer.appendChild(pencil_icon);
+
+        expenseDiv.appendChild(expenseTitleContainer);
 
 
         // AMOUNT INPUT
@@ -276,7 +282,7 @@ class Category{
 
     addExpenseToBase(expenseName){
         let url = `/add-expense/${this.name}?expense=${expenseName}`;
-        console.log(url);
+        // console.log(url);
 
         fetch(url).then(function (response) {
             // Waiting for response
@@ -290,7 +296,7 @@ class Category{
     }
 
     newExpenseFromUser = () => {
-        console.log(this);
+        // console.log(this);
         let expenseName = prompt("Enter expense name");
 
         if(expenseName && expenseName.length > 0)
@@ -340,9 +346,9 @@ fetch("/get-base").then(function (response) {
     return response.json();
 }).then(function (data) {
     // Processing response
-    console.log(data);
+    // console.log(data);
     baseData = data;
-    console.log("assigned");
+    // console.log("assigned");
     populate_categories();
 });
 
@@ -396,16 +402,17 @@ function submit_data(){
         income: income_val,
         categories: categories
     };
-    console.log(JSON.stringify(dummy_data));
+    // console.log(JSON.stringify(dummy_data));
     let url = "/insert?data=" + JSON.stringify(dummy_data);
     fetch(url).then(function (response) {
         // Waiting for response
-        if (!response.ok)
+        if (!response.ok){
+            console.log(response.text());
             throw new Error('Error while getting customer data from API: Network response was not OK');
+        }
         return response.text();
     }).then(function (data) {
         // Processing response
-        console.log(data);
         if(data == "Data inserted"){
             alert("Data Inserted!");
             window.location.href = "/";

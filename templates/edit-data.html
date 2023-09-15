@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Edit Data</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='nav.css') }}">
     <link rel="shortcut icon" href="{{url_for('static', filename = 'icon.png')}}" type="image/png">
@@ -31,6 +31,42 @@
     </div>
     {% include 'footer.html' %}
     <script>
+        
+        function parseMonYyToDate(monYyString) {
+        // Create a mapping of month abbreviations to month numbers
+        const monthAbbreviations = {
+            JAN: 0,
+            FEB: 1,
+            MAR: 2,
+            APR: 3,
+            MAY: 4,
+            JUN: 5,
+            JUL: 6,
+            AUG: 7,
+            SEP: 8,
+            OCT: 9,
+            NOV: 10,
+            DEC: 11
+        };
+
+        // Split the input string into month and year parts
+        const [monthAbbreviation, year] = monYyString.split('_');
+
+        // Check if the month abbreviation is valid
+        if (monthAbbreviations.hasOwnProperty(monthAbbreviation)) {
+            const month = monthAbbreviations[monthAbbreviation];
+            // Assuming that the day is the 1st day of the month
+            const day = 1;
+            // Create a Date object using the year, month, and day
+            const date = new Date(`20${year}`, month, day);
+
+            return date;
+        } else {
+            // Handle invalid month abbreviation
+            throw new Error('Invalid month abbreviation');
+        }
+        }
+
         function createElementWithClassName(tag, className){
             let element = document.createElement(tag);
             element.className = className;
@@ -127,18 +163,26 @@
                 expenseDiv.setAttribute("data-expense-id", this.id);
 
 
-                // P TAG (EXPENSE TITLE)
-                let expenseTitle = createElementWithClassName("p", "expense-title");
-                expenseTitle.innerText = this.name;
-                expenseTitle.ondblclick = () => {
-                    expenseTitle.contentEditable = true;
-                    expenseTitle.focus();
-                }
-                expenseTitle.onblur = e => {
-                    expenseTitle.contentEditable = false;
-                    this.handleNameEdit(e);
-                }
-                expenseDiv.appendChild(expenseTitle);
+		let expenseTitleContainer = createElementWithClassName("div", "expense-title-container");
+
+        // P TAG (EXPENSE TITLE)
+        let expenseTitle = createElementWithClassName("p", "expense-title");
+        expenseTitle.innerText = this.name;
+        expenseTitle.ondblclick = () => {
+            expenseTitle.contentEditable = true;
+            expenseTitle.focus();
+        }
+        expenseTitle.onblur = e => {
+            expenseTitle.contentEditable = false;
+            this.handleNameEdit(e);
+        }
+        expenseTitleContainer.appendChild(expenseTitle);
+
+        let pencil_icon = document.createElement("img");
+        pencil_icon.src = "../../static/edit.png";
+        expenseTitleContainer.appendChild(pencil_icon);
+
+        expenseDiv.appendChild(expenseTitleContainer);
 
 
                 // AMOUNT INPUT
@@ -358,7 +402,7 @@
             "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
             ];
 
-            let date = new Date();
+            let date = parseMonYyToDate("{{month_name}}");
         
             const year = date.getFullYear() % 100;
             const month = months[date.getMonth()];

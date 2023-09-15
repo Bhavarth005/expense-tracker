@@ -3,12 +3,15 @@ import io
 import json
 import csv
 import re
+import http.client
+import random
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from pymongo import ASCENDING
 from bson import json_util
-from flask import Flask, make_response, render_template, request, redirect, url_for, Response, flash, get_flashed_messages
+from flask import Flask, make_response, render_template, request, redirect, url_for, Response, flash, get_flashed_messages, session
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+import requests
 from werkzeug.security import generate_password_hash, check_password_hash
 from pymongo import MongoClient
 from bson import ObjectId
@@ -51,6 +54,62 @@ def load_user(user_id):
     
     return None
 
+@app.route('/check-otp-page', methods=['GET', 'POST'])
+def load_check_otp():
+    if(session.get('otp')):
+        return render_template('enter-otp.html')
+    else:
+        return redirect(url_for('send_req'))
+
+
+    
+@app.route('/reset-pw', methods=['GET', 'POST'])
+def reset(): 
+    if request.method == "POST":
+        otp = request.form.get('otp')
+        if(int(session['otp']) == int(otp)):
+            password = request.form.get('password')
+            c_password = request.form.get('c_password')
+            if (password == c_password):
+                collection = db["users"]
+                filter = {"username": session['reset-pw-username']}
+                update = {"$set": {"password" : generate_password_hash(password)}}
+                collection.update_one(filter, update)
+                session.pop('otp')
+                session.pop('reset-pw-username')
+                return render_template('login.html')
+            else:
+                flash('Credentials do not match!!')
+        else:
+            flash('Incorrect OTP, try again')
+        return render_template('enter-otp.html')
+    else:
+        return redirect(url_for("send_req"))
+    
+
+@app.route('/send_reset_request', methods=['GET', 'POST'])
+def send_req():
+    return render_template('send-req.html')
+
+
+
+@app.route('/reset_request', methods=['GET', 'POST'])
+def reset_request():
+    if request.method == "POST":
+        username = request.form.get('username')
+        collection = db["users"]
+        user_data = collection.find_one({"username":username})
+        if(user_data):
+            email = user_data["email"]
+            otp = random.randint(111111,999999)
+            session['otp'] = otp
+            session['reset-pw-username'] = username
+            email_request = ("http://localhost:8081/?email="+email+"&otp="+ str(otp))
+            response = requests.get(email_request)
+            flash(response.text)
+            return redirect(url_for('load_check_otp'))
+
+
 @app.route('/create_account', methods=['GET', 'POST'])
 def create_account():
     if request.method == 'POST':
@@ -62,10 +121,10 @@ def create_account():
         mobile_no = request.form.get('mobile-no')
         email = request.form.get('email')
 
-        #Check if both credenials match
-        if password == c_password:
-            flash('Credentials do not match')
-            return render_template('register.html')
+        # #Check if both credenials match
+        # if password == c_password:
+        #     flash('Credentials do not match')
+        #     return render_template('register.html')
 
 
         # Check if the username already exists

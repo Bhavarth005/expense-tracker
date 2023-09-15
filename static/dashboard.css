@@ -7,7 +7,17 @@
 body{
     background: #111;
     color: #fff;
-    font-family: "DM Sans";
+    font-family: "Montserrat";
+}
+
+.expense-title-container img {
+    height: 20px;
+    margin-left: 10px;
+    filter: invert(1);
+}
+.expense-title-container {
+    display: flex;
+    align-items: center;
 }
 
 .container{
@@ -278,4 +288,13 @@ body{
         gap: 20px;
         flex-direction: column;
     }
+}
+.expense-title-container img {
+    height: 20px;
+    margin-left: 10px;
+    filter: invert(1);
+}
+.expense-title-container {
+    display: flex;
+    align-items: center;
 }

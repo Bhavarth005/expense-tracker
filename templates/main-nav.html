@@ -1,0 +1,56 @@
+<style>
+    *{
+        margin: 0;
+        padding: 0;
+        font-family: "Montserrat";
+        color: #fff;
+    }
+    body{
+        background: #181818;
+    }
+    nav{
+        background: #222;
+        width: calc(100% - 40px);
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 99;
+    }
+    nav .left .logo{
+        display: flex;
+        align-items: center;
+    }
+    nav .left .logo img{
+        height: 25px;
+    }
+
+    nav .left .logo p{
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+    }
+
+    nav .right a{
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    nav .right a img{
+        filter: invert(0.8);
+    }
+</style>
+
+<nav>
+    <div class="left">
+        <div class="logo">
+		<img src="{{ url_for('static', filename='hostingspell-white.png') }}"><p>&nbsp;&nbsp;|&nbsp;&nbsp;Tools</p>
+        </div>
+    </div>
+    <div class="right">
+	    <a href="hostingspell.com"><p>HostingSpell Main site</p><img src="{{ url_for('static', filename='link.png') }}"></a>
+    </div>
+</nav>

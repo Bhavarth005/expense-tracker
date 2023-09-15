@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Form</title>
+    <title>Reset Form</title>
     <link rel="stylesheet" href="../static/login.css">
     <link rel="shortcut icon" href="{{url_for('static', filename = 'icon.png')}}" type="image/png">
 </head>
@@ -13,15 +13,11 @@
         <div class="logo-container">
             <img src="{{ url_for('static', filename='logo.png') }}" class="logo">
         </div>
-        <h1 class="heading" style="text-align: center;">Login</h1>
-        <form action="{{url_for('login')}}" method="POST" class="form">
+        <h1 class="heading" style="text-align: center;">Reset Password</h1>
+        <form action="{{url_for('reset_request')}}" method="POST" class="form">
             <p class="field-label">Username</p>
-            <input type="text" name="username" id="username" placeholder="Enter Username" required autocomplete="off">
-            <p class="field-label label-pw">Password</p>
-            <input type="password" name="password" id="password" placeholder="Enter Password" required>
-            <input type="submit" value="Login">
-            <p id="Forget_text">Forgot Password? <a href="{{url_for('send_req')}}">Reset Password Here</a></p>
-            <p id="Register_text">New User? <a href="{{url_for('create_account')}}">Register Here</a></p>
+            <input type="text" name="username" id="username" placeholder="Enter username" required autocomplete="off">
+            <input type="submit" value="Send OTP">
         </form>
     </div>
 

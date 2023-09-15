@@ -6,7 +6,7 @@
 body{
     background: #111;
     color: #fff;
-    font-family: "DM Sans";
+    font-family: "Montserrat";
 }
 
 .container{
@@ -243,4 +243,13 @@ body > h1{
         display: grid;
         grid-template-columns: 1fr
     }
+}
+.expense-title-container img {
+    height: 20px;
+    margin-left: 10px;
+    filter: invert(1);
+}
+.expense-title-container {
+    display: flex;
+    align-items: center;
 }

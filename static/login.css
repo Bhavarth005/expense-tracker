@@ -1,7 +1,7 @@
 *{
     margin: 0;
     padding: 0;
-    font-family: "Quicksand";
+    font-family: "Montserrat";
 }
 
 body{
@@ -10,6 +10,15 @@ body{
 
 .logo{
     height: 40px;
+}
+
+
+form a{
+	color: #fff;
+}
+
+#Forget_text{
+	margin-top: 20px;
 }
 
 .main-container{
